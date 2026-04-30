@@ -150,10 +150,14 @@ export const useStore = create<AppStore>()(
       },
 
       addToHistory: (entry) =>
-        set((state) => ({ history: [entry, ...state.history] })),
+        set((state) => ({
+          history: Array.isArray(state.history) ? [entry, ...state.history] : [entry]
+        })),
 
       removeFromHistory: (id) =>
-        set((state) => ({ history: state.filter((e) => e.id !== id) })),
+        set((state) => ({
+          history: Array.isArray(state.history) ? state.history.filter((e) => e.id !== id) : []
+        })),
 
       clearHistory: () => set({ history: [] }),
 

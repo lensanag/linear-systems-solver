@@ -1,8 +1,7 @@
 import type { HistoryEntry } from '@/engines/shared/types';
 import { useStore } from '@/store/useStore';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, RotateCcw, Trash2, AlertTriangle, Hash } from 'lucide-react';
+import { X, RotateCcw, Trash2, Hash } from 'lucide-react';
 
 interface HistoryPanelProps {
   isOpen: boolean;
@@ -12,8 +11,6 @@ interface HistoryPanelProps {
 
 export function HistoryPanel({ isOpen, onClose, onRestore }: HistoryPanelProps) {
   const { t } = useTranslation();
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-  const [confirmClearAll, setConfirmClearAll] = useState(false);
   const { history, removeFromHistory, clearHistory } = useStore();
 
   if (!isOpen) return null;
@@ -72,7 +69,10 @@ export function HistoryPanel({ isOpen, onClose, onRestore }: HistoryPanelProps) 
                     {t('history.restore')}
                   </button>
                   <button
-                    onClick={() => setConfirmDelete(entry.id)}
+                    onClick={() => {
+                      console.log('[HISTORY] Deleting entry:', entry.id);
+                      removeFromHistory(entry.id);
+                    }}
                     className="flex items-center gap-1 px-2 py-1 text-xs text-red-600 border border-red-200 hover:bg-red-50 rounded"
                   >
                     <Trash2 size={12} />
@@ -88,70 +88,15 @@ export function HistoryPanel({ isOpen, onClose, onRestore }: HistoryPanelProps) 
       {history.length > 0 && (
         <div className="p-4 border-t border-border">
           <button
-            onClick={() => setConfirmClearAll(true)}
+            onClick={() => {
+              console.log('[HISTORY] Clearing all history');
+              clearHistory();
+            }}
             className="flex items-center justify-center gap-2 w-full px-4 py-2 text-xs text-red-600 border border-red-200 hover:bg-red-50 rounded"
           >
             <Trash2 size={14} />
             {t('history.clearAll')}
           </button>
-        </div>
-      )}
-
-      {confirmDelete && (
-        <div className="fixed inset-0 bg-black/30 z-[60] flex items-center justify-center">
-          <div className="bg-surface p-4 border border-border shadow-lg max-w-sm rounded">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle size={20} className="text-red-500" />
-              <p className="text-sm text-text-primary">{t('history.confirmDelete')}</p>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setConfirmDelete(null)}
-                className="px-3 py-1.5 text-xs border border-border text-text-secondary hover:bg-muted rounded"
-              >
-                {t('history.cancel')}
-              </button>
-              <button
-                onClick={() => {
-                  removeFromHistory(confirmDelete);
-                  setConfirmDelete(null);
-                }}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-600 text-white hover:bg-red-700 rounded"
-              >
-                <Trash2 size={12} />
-                {t('history.delete')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {confirmClearAll && (
-        <div className="fixed inset-0 bg-black/30 z-[60] flex items-center justify-center">
-          <div className="bg-surface p-4 border border-border shadow-lg max-w-sm rounded">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle size={20} className="text-red-500" />
-              <p className="text-sm text-text-primary">{t('history.confirmClearAll')}</p>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setConfirmClearAll(false)}
-                className="px-3 py-1.5 text-xs border border-border text-text-secondary hover:bg-muted rounded"
-              >
-                {t('history.cancel')}
-              </button>
-              <button
-                onClick={() => {
-                  clearHistory();
-                  setConfirmClearAll(false);
-                }}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-600 text-white hover:bg-red-700 rounded"
-              >
-                <Trash2 size={12} />
-                {t('history.clearAll')}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
