@@ -154,6 +154,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
         onAddRow={() => setDimensions(rows + 1, cols)}
         onAddCol={() => setDimensions(rows, cols + 1)}
         onRemoveRow={handleRemoveRow}
+        onRemoveCol={() => setDimensions(rows, Math.max(2, cols - 1))}
       />
 
       <button

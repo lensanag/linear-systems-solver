@@ -59,6 +59,7 @@ interface MatrixInputProps {
   onAddRow: () => void;
   onAddCol: () => void;
   onRemoveRow: (index: number) => void;
+  onRemoveCol: (index: number) => void;
 }
 
 export function MatrixInput({
@@ -69,8 +70,9 @@ export function MatrixInput({
   onAddRow,
   onAddCol,
   onRemoveRow,
+  onRemoveCol,
 }: MatrixInputProps) {
-  const numCols = coefficients[0]?.length ? coefficients[0].length - 1 : 3;
+  const numCols = coefficients[0]?.length ? coefficients[0].length - 1 : 2;
 
   return (
     <div className="overflow-x-auto">
@@ -79,11 +81,20 @@ export function MatrixInput({
           <tr>
             <th className="w-8 p-2"></th>
             {headers.map((header, i) => (
-              <th key={i} className="p-2">
-                <HeaderCell
-                  value={header}
-                  onChange={(v) => onHeaderChange(i, v)}
-                />
+              <th key={i} className="p-1">
+                <div className="flex flex-col items-center gap-1">
+                  <HeaderCell
+                    value={header}
+                    onChange={(v) => onHeaderChange(i, v)}
+                  />
+                  <button
+                    onClick={() => onRemoveCol(i)}
+                    className="text-red-500 hover:text-red-700 text-xs"
+                    title="Eliminar columna"
+                  >
+                    ×
+                  </button>
+                </div>
               </th>
             ))}
             <th className="p-2 text-gray-500 text-sm">b</th>
