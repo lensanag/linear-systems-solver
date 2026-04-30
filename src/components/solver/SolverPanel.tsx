@@ -137,7 +137,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
       <div className="mb-5" id="mode-selector">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3 flex-shrink-0">
-            <span className={`text-sm font-medium ${mode === 'numeric' ? 'text-primary' : 'text-secondary'}`}>
+            <span className={`text-sm font-medium ${mode === 'numeric' ? 'text-primary' : 'text-text-secondary'}`}>
               {t('modes.numeric')}
             </span>
             <button
@@ -154,20 +154,20 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
                 `}
               />
             </button>
-            <span className={`text-sm font-medium ${mode === 'symbolic' ? 'text-primary' : 'text-secondary'}`}>
+            <span className={`text-sm font-medium ${mode === 'symbolic' ? 'text-primary' : 'text-text-secondary'}`}>
               {t('modes.symbolic')}
             </span>
           </div>
 
           {mode === 'symbolic' && (
             <div className="flex items-center gap-2 ml-4 pl-4 border-l border-border">
-              <label className="text-xs text-secondary">{t('solverPanel.parameter')}:</label>
+              <label className="text-xs text-text-secondary">{t('solverPanel.parameter')}:</label>
               <input
                 type="text"
                 value={paramSymbol}
                 onChange={(e) => setParamSymbol(e.target.value.slice(0, 5))}
                 maxLength={5}
-                className="w-12 px-2 py-1 border border-border rounded text-center text-sm focus:border-primary focus:outline-none"
+                className="w-12 px-2 py-1 border border-border rounded text-center text-sm text-text-primary focus:border-primary focus:outline-none bg-surface"
                 placeholder="a"
               />
             </div>
@@ -176,7 +176,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
       </div>
 
       <div className="mb-4" id="method-selector">
-        <label className="text-xs text-secondary uppercase tracking-wide mb-2 block">{t('methodSelector.title')}</label>
+        <label className="text-xs text-text-secondary uppercase tracking-wide mb-2 block">{t('methodSelector.title')}</label>
         <div className="grid grid-cols-5 gap-2">
           {METHODS.map((m) => {
             const disabled = isMethodDisabled(m.id);
@@ -192,22 +192,22 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
                   ${isSelected
                     ? 'bg-primary text-white border-primary shadow-sm'
                     : disabled
-                    ? 'bg-gray-50 text-secondary-light border-border cursor-not-allowed opacity-60'
-                    : 'bg-surface text-secondary border-border hover:border-primary hover:text-primary'
+                    ? 'bg-muted text-text-muted border-border cursor-not-allowed opacity-70'
+                    : 'bg-surface text-text-secondary border-border hover:border-primary hover:text-primary'
                   }
                 `}
               >
                 <span className="text-xs font-mono font-bold">{m.icon}</span>
                 <span className="block text-[10px] mt-0.5 truncate">{t(m.labelKey)}</span>
                 {disabled && m.modes.length === 1 && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary-light text-white text-[8px] rounded-full flex items-center justify-center">!</span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary text-white text-[8px] rounded-full flex items-center justify-center">!</span>
                 )}
               </button>
             );
           })}
         </div>
         {!isSquare && (
-          <p className="text-xs text-secondary-light mt-2">{t('methodSelector.squareHint')}</p>
+          <p className="text-xs text-text-muted mt-2">{t('methodSelector.squareHint')}</p>
         )}
       </div>
 

@@ -20,10 +20,10 @@ export function CellInput({ value, onChange, error, disabled }: CellInputProps) 
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
       className={cn(
-        'w-16 h-9 px-2 text-center text-sm border border-border rounded',
+        'w-16 h-9 px-2 text-center text-sm text-text-primary border border-border rounded bg-surface',
         'focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary',
-        error ? 'border-red-400 bg-red-50' : 'bg-surface',
-        disabled && 'bg-gray-100 cursor-not-allowed'
+        error ? 'border-red-400 bg-red-50' : '',
+        disabled && 'bg-muted cursor-not-allowed'
       )}
     />
   );
@@ -43,9 +43,9 @@ export function HeaderCell({ value, onChange, error }: HeaderCellProps) {
       onChange={(e) => onChange(e.target.value)}
       maxLength={5}
       className={cn(
-        'w-14 h-7 px-1 text-center text-xs border border-border rounded',
+        'w-14 h-7 px-1 text-center text-xs text-text-primary border border-border rounded bg-muted',
         'focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary',
-        error ? 'border-red-400 bg-red-50' : 'bg-gray-50'
+        error ? 'border-red-400 bg-red-50' : ''
       )}
     />
   );
@@ -89,7 +89,7 @@ export function MatrixInput({
                   />
                   <button
                     onClick={() => onRemoveCol(i)}
-                    className="text-secondary-light hover:text-red-500 text-xs w-4 h-4 flex items-center justify-center"
+                    className="text-text-muted hover:text-red-500 text-xs w-4 h-4 flex items-center justify-center"
                     title="Eliminar columna"
                   >
                     ×
@@ -97,14 +97,14 @@ export function MatrixInput({
                 </div>
               </th>
             ))}
-            <th className="p-1 text-secondary text-xs font-normal italic">b</th>
+            <th className="p-1 text-text-secondary text-xs font-normal italic">b</th>
             <th className="w-8 p-1"></th>
           </tr>
         </thead>
         <tbody>
           {coefficients.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              <td className="p-1 text-secondary text-xs text-center font-mono">
+              <td className="p-1 text-text-secondary text-xs text-center font-mono">
                 {rowIndex + 1}
               </td>
               {row.slice(0, numCoeffCols).map((cell, colIndex) => (
@@ -115,7 +115,7 @@ export function MatrixInput({
                   />
                 </td>
               ))}
-              <td className="p-1 text-secondary-light text-sm font-bold">|</td>
+              <td className="p-1 text-text-muted text-sm font-bold">|</td>
               <td className="p-1">
                 <CellInput
                   value={row[numCoeffCols] || ''}
@@ -125,7 +125,7 @@ export function MatrixInput({
               <td className="p-1">
                 <button
                   onClick={() => onRemoveRow(rowIndex)}
-                  className="text-secondary-light hover:text-red-500 w-4 h-4 flex items-center justify-center text-xs"
+                  className="text-text-muted hover:text-red-500 w-4 h-4 flex items-center justify-center text-xs"
                   title="Eliminar fila"
                 >
                   ×
@@ -139,13 +139,13 @@ export function MatrixInput({
               <div className="flex gap-2">
                 <button
                   onClick={onAddRow}
-                  className="px-2 py-1 text-xs bg-gray-50 text-secondary border border-border hover:border-primary hover:text-primary"
+                  className="px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary"
                 >
                   + Fila
                 </button>
                 <button
                   onClick={onAddCol}
-                  className="px-2 py-1 text-xs bg-gray-50 text-secondary border border-border hover:border-primary hover:text-primary"
+                  className="px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary"
                 >
                   + Columna
                 </button>

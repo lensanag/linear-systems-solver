@@ -66,13 +66,13 @@ export function AppContent() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-primary">{t('app.title')}</h1>
-              <p className="text-xs text-secondary mt-0.5">Linear Systems Solver</p>
+              <p className="text-xs text-text-secondary mt-0.5">Linear Systems Solver</p>
             </div>
             <div className="flex items-center gap-4">
               <select
                 value={currentLanguage}
                 onChange={(e) => handleLanguageChange(e.target.value as 'es' | 'en')}
-                className="px-2 py-1 border border-border rounded text-sm text-secondary bg-surface"
+                className="px-2 py-1 border border-border rounded text-sm text-text-secondary bg-surface"
               >
                 <option value="es">ES</option>
                 <option value="en">EN</option>
@@ -86,20 +86,20 @@ export function AppContent() {
         <div className="container mx-auto px-4 flex gap-1 py-1.5">
           <button
             onClick={() => setShowTour(true)}
-            className="px-3 py-1.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded"
+            className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-primary hover:bg-muted rounded"
           >
             {currentLanguage === 'es' ? 'Tutorial' : 'Tutorial'}
           </button>
           <button
             onClick={() => setShowHistory(true)}
-            className="px-3 py-1.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded"
+            className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-primary hover:bg-muted rounded"
             id="history-tab"
           >
             {t('history.title')}
           </button>
           <button
             onClick={() => setShowExamples(true)}
-            className="px-3 py-1.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded"
+            className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-primary hover:bg-muted rounded"
           >
             {currentLanguage === 'es' ? 'Ejemplos' : 'Examples'}
           </button>
