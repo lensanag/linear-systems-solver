@@ -72,7 +72,7 @@ export function MatrixInput({
   onRemoveRow,
   onRemoveCol,
 }: MatrixInputProps) {
-  const numCols = coefficients[0]?.length ? coefficients[0].length - 1 : 2;
+  const numCoeffCols = headers.length;
 
   return (
     <div className="overflow-x-auto">
@@ -107,7 +107,7 @@ export function MatrixInput({
               <td className="p-2 text-gray-500 text-sm text-center">
                 F{rowIndex + 1}
               </td>
-              {row.slice(0, numCols).map((cell, colIndex) => (
+              {row.slice(0, numCoeffCols).map((cell, colIndex) => (
                 <td key={colIndex} className="p-1">
                   <CellInput
                     value={cell}
@@ -118,8 +118,8 @@ export function MatrixInput({
               <td className="p-1 text-gray-400">|</td>
               <td className="p-1">
                 <CellInput
-                  value={row[numCols] || ''}
-                  onChange={(v) => onCoefficientChange(rowIndex, numCols, v)}
+                  value={row[numCoeffCols] || ''}
+                  onChange={(v) => onCoefficientChange(rowIndex, numCoeffCols, v)}
                 />
               </td>
               <td className="p-2">
@@ -135,7 +135,7 @@ export function MatrixInput({
           ))}
           <tr>
             <td className="p-2"></td>
-            <td colSpan={numCols + 2} className="p-2">
+            <td colSpan={numCoeffCols + 2} className="p-2">
               <div className="flex gap-2">
                 <button
                   onClick={onAddRow}
