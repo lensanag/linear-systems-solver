@@ -66,7 +66,7 @@ export function StepPanel({
 }: StepPanelProps) {
   const { t } = useTranslation();
 
-  if (steps.length === 0) {
+  if (steps.length === 0 && !solution) {
     return (
       <div className="p-8 text-center text-gray-500">
         {t('stepPanel.placeholder')}

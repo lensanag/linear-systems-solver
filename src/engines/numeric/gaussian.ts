@@ -356,10 +356,29 @@ export function solveCramer(
   const coeffMatrix: NumericCell[][] = matrix.map(row => row.slice(0, numCols) as NumericCell[]);
   const bVector: NumericCell[] = matrix.map(row => row[numCols] as NumericCell);
 
+  steps.push({
+    phase: 'Matriz aumentada',
+    operationLabel: 'Sistema original',
+    matrixBefore: matrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    matrixAfter: matrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    descriptionKey: 'steps.cramer.augmented',
+    isKeyStep: true,
+  });
+
   const detA = calculateDeterminant(coeffMatrix);
   if (isZero(detA.num, detA.den)) {
     return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
   }
+
+  const detAStr = detA.den === 1 ? detA.num.toString() : `${detA.num}/${detA.den}`;
+  steps.push({
+    phase: 'Determinante de A',
+    operationLabel: `det(A) = ${detAStr}`,
+    matrixBefore: coeffMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    matrixAfter: coeffMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    descriptionKey: 'steps.cramer.detA',
+    isKeyStep: true,
+  });
 
   const solution: NumericCell[] = [];
   for (let col = 0; col < numCols; col++) {
@@ -380,6 +399,17 @@ export function solveCramer(
     }
     const normalized = normalizeFraction(result.num, result.den);
     solution.push({ num: normalized.num, den: normalized.den });
+
+    const detColStr = detCol.den === 1 ? detCol.num.toString() : `${detCol.num}/${detCol.den}`;
+    const resultStr = normalized.den === 1 ? normalized.num.toString() : `${normalized.num}/${normalized.den}`;
+    steps.push({
+      phase: `Reemplazar columna ${col + 1}`,
+      operationLabel: `x${col + 1} = det(A_${col + 1}) / det(A) = ${detColStr} / ${detAStr} = ${resultStr}`,
+      matrixBefore: coeffMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+      matrixAfter: modifiedMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+      descriptionKey: 'steps.cramer.replace',
+      isKeyStep: false,
+    });
   }
 
   return {
@@ -454,10 +484,28 @@ export function solveInverse(
     return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
   }
 
+  steps.push({
+    phase: 'Determinante de A',
+    operationLabel: `det(A) = ${detA.den === 1 ? detA.num : `${detA.num}/${detA.den}`}`,
+    matrixBefore: coeffMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    matrixAfter: coeffMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    descriptionKey: 'steps.inverse.detA',
+    isKeyStep: true,
+  });
+
   const inverseMatrix = calculateInverse(coeffMatrix);
   if (!inverseMatrix) {
     return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
   }
+
+  steps.push({
+    phase: 'Matriz Inversa',
+    operationLabel: 'A⁻¹ calculada mediante Gauss-Jordan',
+    matrixBefore: coeffMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    matrixAfter: inverseMatrix.map(row => row.map(c => createFractionCell(c.num, c.den))),
+    descriptionKey: 'steps.inverse.calculated',
+    isKeyStep: true,
+  });
 
   const solution: NumericCell[] = [];
   for (let row = 0; row < numRows; row++) {

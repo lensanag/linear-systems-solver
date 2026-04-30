@@ -56,7 +56,18 @@
     },
     "forward_elimination": "Forward elimination",
     "backward_elimination": "Backward elimination",
-    "normalize_pivot": "Pivot normalization"
+    "normalize_pivot": "Pivot normalization",
+    "cramer": {
+      "augmented": "Augmented matrix of the system",
+      "detA": "Determinant of coefficient matrix",
+      "replace": "Replace column"
+    },
+    "inverse": {
+      "augmented": "Augmented matrix [A|I]",
+      "forward": "Forward elimination",
+      "backward": "Backward elimination",
+      "identity": "Identity matrix reached"
+    }
   },
   "stepPanel": {
     "title": "Solution Steps",

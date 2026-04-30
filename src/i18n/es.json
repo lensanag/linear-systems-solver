@@ -56,7 +56,18 @@
     },
     "forward_elimination": "Eliminación hacia adelante",
     "backward_elimination": "Eliminación hacia atrás",
-    "normalize_pivot": "Normalización del pivote"
+    "normalize_pivot": "Normalización del pivote",
+    "cramer": {
+      "augmented": "Matriz aumentada del sistema",
+      "detA": "Determinante de la matriz de coeficientes",
+      "replace": "Reemplazar columna"
+    },
+    "inverse": {
+      "augmented": "Matriz aumentada [A|I]",
+      "forward": "Eliminación hacia adelante",
+      "backward": "Eliminación hacia atrás",
+      "identity": "Matriz identidad alcanzada"
+    }
   },
   "stepPanel": {
     "title": "Pasos de la Solución",
