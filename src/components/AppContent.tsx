@@ -104,8 +104,13 @@ export function AppContent() {
           <div className="bg-white rounded-lg shadow" id="matrix-editor">
             <SolverPanel onSolve={handleSolve} />
           </div>
-          <div className="bg-white rounded-lg shadow" id="step-panel">
+          <div className="bg-white rounded-lg shadow relative" id="step-panel">
             <div id="solution-preview">
+              {currentResult && (
+                <div className="absolute top-0 right-0 p-2" id="export-menu">
+                  <ExportMenu result={currentResult} />
+                </div>
+              )}
               <StepPanel
                 headers={headers}
                 steps={currentResult?.steps || []}
@@ -114,11 +119,6 @@ export function AppContent() {
                 hasInfiniteSolutions={currentResult?.hasInfiniteSolutions || false}
               />
             </div>
-            {currentResult && (
-              <div className="px-4 pb-4" id="export-menu">
-                <ExportMenu result={currentResult} />
-              </div>
-            )}
           </div>
         </div>
       </main>
