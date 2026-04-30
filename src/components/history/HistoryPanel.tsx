@@ -22,12 +22,13 @@ export function HistoryPanel({ isOpen, onClose, onRestore }: HistoryPanelProps) 
   const formatPreview = (entry: HistoryEntry): string => {
     if (!entry.coefficients.length || !entry.coefficients[0].length) return '';
     const firstRow = entry.coefficients[0];
-    const preview = firstRow.map((val, idx) => {
+    const numVars = entry.headers.length;
+    const preview = firstRow.slice(0, numVars).map((val, idx) => {
       const header = entry.headers[idx] || `x${idx + 1}`;
       const value = val || '0';
       return `${value}${header}`;
     }).join(' + ');
-    const b = firstRow[firstRow.length - 1] || '';
+    const b = firstRow[numVars] || '';
     return `${preview} = ${b}`;
   };
 
