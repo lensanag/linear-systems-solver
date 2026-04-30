@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '@/store/useStore';
-import { showPDFWarning, exportToPDF } from './pdf';
+import { showPDFWarning, exportToPDFReact } from './pdf-react';
 import { showImageWarning, exportToImage } from './image';
 import { downloadLatex } from './latex';
 import type { SolveResult } from '@/engines/shared/types';
@@ -23,11 +23,12 @@ export function ExportMenu({ result, previewElementId = 'solution-preview' }: Ex
   const handleExportPDF = async () => {
     if (!showPDFWarning(language === 'es')) return;
     try {
-      await exportToPDF(previewElementId, {
+      await exportToPDFReact({
         method: method || 'unknown',
         dimensions: { rows, cols },
         headers,
         result,
+        coefficients,
         language,
       });
     } catch (error) {

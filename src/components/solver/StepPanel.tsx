@@ -45,7 +45,13 @@ function CellRenderer({ cell }: { cell: Cell }) {
     }
   }, [cell]);
 
-  return <span ref={ref} className="font-mono text-sm text-text-primary" />;
+  // Wrap in a block-level container to properly reserve vertical space for fractions
+  // This prevents KaTeX elements from overlaying adjacent content
+  return (
+    <div className="inline-block min-h-[35px] min-w-[40px] flex items-center justify-center">
+      <span ref={ref} className="font-mono text-sm text-text-primary whitespace-nowrap" />
+    </div>
+  );
 }
 
 function MatrixRenderer({ matrix }: { matrix: Cell[][] }) {

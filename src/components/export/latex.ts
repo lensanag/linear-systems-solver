@@ -94,15 +94,16 @@ export function generateLatexDocument(data: ExportData): string {
   latex += '\\section{' + methodLabel + '}\n';
   latex += methodName + '\n\n';
 
-  if (result.steps.length > 0) {
-    latex += '\\section{' + solutionSteps + '}\n\n';
+   if (result.steps.length > 0) {
+     latex += '\\section{' + solutionSteps + '}\n\n';
 
-    result.steps.forEach((step, index) => {
-      latex += '\\subsection*{' + stepLabel + ' ' + (index + 1) + ': ' + step.phase + '}\n';
-      latex += '\\textbf{' + step.operationLabel + '}\n\n';
-      latex += '$$\n' + matrixToLatex(step.matrixAfter, headers) + '\n$$\n\n';
-    });
-  }
+     result.steps.forEach((step, index) => {
+       latex += '\\subsection*{' + stepLabel + ' ' + (index + 1) + '}\n';
+       latex += '\\noindent\\textbf{' + step.phase + '}\n\n';
+       latex += '\\noindent\\textit{' + step.operationLabel + '}\n\n';
+       latex += '\\[\n' + matrixToLatex(step.matrixAfter, headers) + '\n\\]\n\n';
+     });
+   }
 
   if (result.solution && !result.hasNoSolution) {
     latex += '\\section{' + solutionLabel + '}\n\n';
@@ -111,12 +112,12 @@ export function generateLatexDocument(data: ExportData): string {
       latex += infiniteSolutions + '\\newline\n';
     }
 
-    latex += '\\begin{alignat}{2}\n';
-    result.solution.forEach((cell, i) => {
-      latex += '  ' + headers[i] + ' &= ' + cellToLatex(cell);
-      if (i < result.solution!.length - 1) latex += ' \\\\\n';
-    });
-    latex += '\n\\end{alignat}\n\n';
+     latex += '\\begin{align*}\n';
+     result.solution.forEach((cell, i) => {
+       latex += '  ' + headers[i] + ' &= ' + cellToLatex(cell);
+       if (i < result.solution!.length - 1) latex += ' \\\\\n';
+     });
+     latex += '\n\\end{align*}\n\n';
   } else if (result.hasNoSolution) {
     latex += '\\section{' + resultLabel + '}\n';
     latex += noSolution + '\\newline\n';

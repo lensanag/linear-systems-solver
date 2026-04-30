@@ -63,12 +63,19 @@ export function solveLU(coefficients: string[][]): SolveResult {
     if (maxRow !== col) {
       [coeffMatrix[col], coeffMatrix[maxRow]] = [coeffMatrix[maxRow], coeffMatrix[col]];
       [bVector[col], bVector[maxRow]] = [bVector[maxRow], bVector[col]];
-      [U[col], U[maxRow]] = [U[maxRow], U[col]];
+      // Swap only the already-computed L entries (columns 0..col-1).
+      // U rows must NOT be swapped: U is upper-triangular and those entries
+      // have not been filled yet for the current column.
+      for (let k = 0; k < col; k++) {
+        [L[col][k], L[maxRow][k]] = [L[maxRow][k], L[col][k]];
+      }
     }
 
-    for (let row = col; row < n; row++) {
+    // Compute upper-triangular entries of column col (rows 0..col).
+    // U[row][col] = A[row][col] - Σ L[row][k]*U[k][col]  for k = 0..row-1
+    for (let row = 0; row <= col; row++) {
       let sum = createFraction(0, 1);
-      for (let k = 0; k < col; k++) {
+      for (let k = 0; k < row; k++) {
         const lCell = createFraction(L[row][k].num, L[row][k].den);
         const uCell = createFraction(U[k][col].num, U[k][col].den);
         const product = multiplyFractions(lCell, uCell);

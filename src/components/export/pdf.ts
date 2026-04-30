@@ -10,6 +10,58 @@ interface ExportData {
   language: 'es' | 'en';
 }
 
+/**
+ * Wait for all KaTeX elements to finish rendering before proceeding.
+ * This ensures fractions and other math elements are properly laid out
+ * when html2canvas captures the content.
+ */
+async function waitForKaTeXRender(element: HTMLElement, maxWaitMs: number = 5000): Promise<void> {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    
+    // Check if KaTeX elements exist
+    const checkKaTeX = () => {
+      const katexElements = element.querySelectorAll('.katex');
+      if (katexElements.length > 0) {
+        resolve();
+        return true;
+      }
+      return false;
+    };
+
+    // Initial check
+    if (checkKaTeX()) return;
+
+    // Use MutationObserver to detect when KaTeX renders
+    const observer = new MutationObserver(() => {
+      if (checkKaTeX()) {
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(element, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['class', 'data-katex'],
+    });
+
+    // Timeout fallback (KaTeX should render quickly, but have a safety net)
+    const timeoutId = setTimeout(() => {
+      observer.disconnect();
+      resolve();
+    }, maxWaitMs);
+
+    // Also resolve if we detect KaTeX after a short delay
+    setTimeout(() => {
+      if (checkKaTeX()) {
+        clearTimeout(timeoutId);
+        observer.disconnect();
+      }
+    }, 100);
+  });
+}
+
 export async function exportToPDF(elementId: string, data: ExportData): Promise<void> {
   const element = document.getElementById(elementId);
   if (!element) {
@@ -17,6 +69,12 @@ export async function exportToPDF(elementId: string, data: ExportData): Promise<
   }
 
   const isSpanish = data.language === 'es';
+
+  // Wait for KaTeX to render before capturing
+  await waitForKaTeXRender(element);
+
+  // Small additional delay to ensure DOM is fully settled
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   const canvas = await html2canvas(element, {
     scale: 2,

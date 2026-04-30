@@ -9,6 +9,7 @@
 | [COMPONENTS](COMPONENTS.md) | React component documentation |
 | [ENGINES](ENGINES.md) | Numerical algorithm documentation |
 | [STORE](STORE.md) | Zustand state management guide |
+| [EXPORT_IMPROVEMENTS](EXPORT_IMPROVEMENTS.md) | Export rendering architecture and improvements |
 
 ## Quick Links
 
@@ -33,12 +34,13 @@
 
 ```
 docs/
-├── README.md       # Project overview
-├── AGENTS.md      # AI agent guide (START HERE)
-├── COMPONENTS.md  # Component documentation
-├── ENGINES.md     # Algorithm documentation
-├── STORE.md       # State management
-└── INDEX.md       # This file
+├── README.md                  # Project overview
+├── AGENTS.md                 # AI agent guide (START HERE)
+├── COMPONENTS.md             # Component documentation
+├── ENGINES.md                # Algorithm documentation
+├── STORE.md                  # State management
+├── EXPORT_IMPROVEMENTS.md    # Export rendering improvements
+└── INDEX.md                  # This file
 ```
 
 ## Common Tasks

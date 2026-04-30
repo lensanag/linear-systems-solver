@@ -148,23 +148,41 @@ Uses adjugate method:
 
 ## LU Decomposition (`lu.ts`)
 
-**Method**: A = LU where L is lower triangular, U is upper triangular
+**Method**: A = LU where L is unit lower triangular, U is upper triangular (Doolittle)
 
 ### Algorithm (with partial pivoting)
 
-1. **Decomposition**
-   - For each column `col`:
-     - Find max element in column as pivot
-     - Swap rows in A and b
-     - Compute U[col][col] = A[col][col] - sum(L[col][k]*U[k][col])
-     - Compute L[row][col] = (A[row][col] - sum(...)) / U[col][col]
+1. **Decomposition** — column by column:
+   ```
+   For col = 0 to n-1:
+     a. Find pivot: maxRow = argmax |A[row][col]| for row = col..n-1
+     b. If maxRow != col:
+          swap A[col] ↔ A[maxRow]
+          swap b[col] ↔ b[maxRow]
+          for k = 0..col-1: swap L[col][k] ↔ L[maxRow][k]   ← L entries only, NOT U
+     c. Upper-triangle entries (row = 0..col):
+          U[row][col] = A[row][col] - Σ L[row][k]*U[k][col]  for k = 0..row-1
+     d. Lower-triangle entries (row = col+1..n-1):
+          L[row][col] = (A[row][col] - Σ L[row][k]*U[k][col]  for k = 0..col-1) / U[col][col]
+   ```
 
 2. **Forward Substitution**: Ly = b
-3. **Backward Substitution**: Ux = y
+   ```
+   For row = 0 to n-1:
+     y[row] = b[row] - Σ L[row][k]*y[k]  for k = 0..row-1
+   ```
+   (L has unit diagonal, so no division needed)
 
-### Partial Pivoting
-- Swap rows to put largest element at pivot position
-- Must apply swaps to b and U matrices
+3. **Backward Substitution**: Ux = y
+   ```
+   For row = n-1 to 0:
+     x[row] = (y[row] - Σ U[row][k]*x[k]  for k = row+1..n-1) / U[row][row]
+   ```
+
+### Partial Pivoting Notes
+- Swap `A` rows and `b` entries to put the largest-magnitude element at the pivot position.
+- Also swap the **already-computed L entries** (columns `0..col-1`) for the same row pair — this keeps L consistent after the reordering.
+- Do **not** swap U rows: U is upper-triangular and its entries for the current column have not been filled yet at the point of the swap.
 
 ### Steps Generated
 - `steps.lu.decompose` - Initial state

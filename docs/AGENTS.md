@@ -63,18 +63,55 @@ Key point: You SUBTRACT the contributions of known variables, and the result is 
 
 ### LU Decomposition with Partial Pivoting
 
-When swapping rows during LU decomposition, you must swap BOTH:
-1. The coefficient matrix rows
-2. The b vector rows
-3. The U matrix rows (not just the current column)
+The Doolittle algorithm builds **L** (unit lower triangular) and **U** (upper triangular) column by column. Two rules are critical:
+
+#### 1. Loop directions
+
+For each column `col`:
+- **U entries** — upper triangle only: `row = 0..col`, inner sum `k < row`
+- **L entries** — lower triangle only: `row = col+1..n-1`, inner sum `k < col`
+
+```typescript
+// U: upper-triangular entries (rows 0..col)
+for (let row = 0; row <= col; row++) {
+  let sum = createFraction(0, 1);
+  for (let k = 0; k < row; k++) {   // k < row, NOT k < col
+    sum = addFractions(sum, multiplyFractions(L[row][k], U[k][col]));
+  }
+  U[row][col] = subtractFractions(coeffMatrix[row][col], sum);
+}
+
+// L: lower-triangular entries (rows col+1..n-1)
+for (let row = col + 1; row < n; row++) {
+  let sum = createFraction(0, 1);
+  for (let k = 0; k < col; k++) {   // k < col is correct here
+    sum = addFractions(sum, multiplyFractions(L[row][k], U[k][col]));
+  }
+  L[row][col] = divideFractions(subtractFractions(coeffMatrix[row][col], sum), U[col][col]);
+}
+```
+
+#### 2. What to swap during pivoting
+
+When a row swap is needed (partial pivoting), swap:
+1. `coeffMatrix` rows ✓
+2. `bVector` entries ✓
+3. The **already-computed L entries** (columns `0..col-1`) — NOT the U rows
 
 ```typescript
 if (maxRow !== col) {
   [coeffMatrix[col], coeffMatrix[maxRow]] = [coeffMatrix[maxRow], coeffMatrix[col]];
   [bVector[col], bVector[maxRow]] = [bVector[maxRow], bVector[col]];
-  [U[col], U[maxRow]] = [U[maxRow], U[col]];  // Also swap U rows!
+  // Swap already-computed L entries to keep L consistent after the pivot.
+  // U rows must NOT be swapped: U is upper-triangular and the entries for
+  // the current column have not been computed yet.
+  for (let k = 0; k < col; k++) {
+    [L[col][k], L[maxRow][k]] = [L[maxRow][k], L[col][k]];
+  }
 }
 ```
+
+**Why not U rows?** At the point of swapping column `col`, `U[col][j]` for `j < col` is `0` (upper-triangular entries below the current column are zero). Swapping them would be a no-op at best and corrupt the matrix at worst if the column index advances.
 
 ## Code Conventions
 
@@ -183,7 +220,7 @@ Tests are in `tests/` directory. Key test files:
 
 1. **Fraction Sign**: Always normalize fractions after arithmetic
 2. **Back-substitution**: Use `sum` directly, don't subtract pivot again
-3. **LU Pivoting**: Swap entire U matrix rows, not just current column
+3. **LU Pivoting**: Swap already-computed L entries (cols 0..col-1), NOT U rows
 4. **State Cleanup**: Matrix changes must clear previous solution steps
 5. **JSON Comparison**: Use `JSON.stringify` for matrix comparison (deep equality)
 
