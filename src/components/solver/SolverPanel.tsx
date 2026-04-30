@@ -1,6 +1,7 @@
 import { useStore } from '@/store/useStore';
 import { solveGaussian, solveGaussJordan, solveCramer, solveInverse, solveLU } from '@/engines/numeric';
 import { solveSymbolicGaussian, solveSymbolicGaussJordan } from '@/engines/symbolic';
+import { runSymPySolve } from '@/utils/pyodideLoader';
 import type { SolveResult } from '@/engines/shared/types';
 import { useTranslation } from 'react-i18next';
 import { MatrixInput } from '@/components/matrix/MatrixInput';
@@ -29,6 +30,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
     setResult,
     setLoading,
     isLoading,
+    pyodideLoaded,
   } = useStore();
 
   const handleExecute = async () => {
@@ -68,15 +70,34 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
           setLoading(false);
           return;
         }
-        switch (method) {
-          case 'gaussian':
-            result = solveSymbolicGaussian(coefficients, headers, paramSymbol);
-            break;
-          case 'gauss-jordan':
-            result = solveSymbolicGaussJordan(coefficients, headers, paramSymbol);
-            break;
-          default:
-            result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
+
+        if (pyodideLoaded) {
+          try {
+            result = await runSymPySolve(coefficients, headers, paramSymbol);
+          } catch (sympyError) {
+            console.warn('Pyodide/SymPy failed, falling back to basic symbolic:', sympyError);
+            switch (method) {
+              case 'gaussian':
+                result = solveSymbolicGaussian(coefficients, headers, paramSymbol);
+                break;
+              case 'gauss-jordan':
+                result = solveSymbolicGaussJordan(coefficients, headers, paramSymbol);
+                break;
+              default:
+                result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
+            }
+          }
+        } else {
+          switch (method) {
+            case 'gaussian':
+              result = solveSymbolicGaussian(coefficients, headers, paramSymbol);
+              break;
+            case 'gauss-jordan':
+              result = solveSymbolicGaussJordan(coefficients, headers, paramSymbol);
+              break;
+            default:
+              result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
+          }
         }
       }
 
