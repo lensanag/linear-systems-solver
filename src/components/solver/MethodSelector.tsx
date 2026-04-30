@@ -1,5 +1,4 @@
 import type { MethodId, EngineMode } from '@/engines/shared/types';
-import { cn } from '@/components/matrix/MatrixInput';
 
 const METHODS: { id: MethodId; labelKey: string }[] = [
   { id: 'gaussian', labelKey: 'methods.gaussian' },
@@ -42,7 +41,7 @@ export function MethodSelector({ mode, rows, cols, selectedMethod, onSelect }: M
   };
 
   return (
-    <div className="flex flex-wrap gap-2 mb-4" id="method-selector">
+    <div className="flex flex-wrap gap-1" id="method-selector">
       {METHODS.map((method) => {
         const disabled = isMethodDisabled(method.id);
         const isSelected = selectedMethod === method.id;
@@ -52,17 +51,17 @@ export function MethodSelector({ mode, rows, cols, selectedMethod, onSelect }: M
             onClick={() => !disabled && onSelect(method.id)}
             disabled={disabled}
             title={disabled ? getTooltip(method.id) : ''}
-            className={cn(
-              'px-3 py-2 rounded border text-sm font-medium transition-colors',
-              isSelected
-                ? 'bg-primary text-primary-foreground'
+            className={`
+              px-3 py-1.5 text-sm border transition-colors
+              ${isSelected
+                ? 'bg-primary text-white border-primary'
                 : disabled
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-            )}
+                ? 'bg-gray-50 text-secondary-light cursor-not-allowed border-border'
+                : 'bg-surface text-secondary border-border hover:bg-gray-50 hover:border-secondary-light'
+              }
+            `}
           >
             {method.labelKey}
-            {disabled && <span className="ml-1 text-xs">ⓘ</span>}
           </button>
         );
       })}

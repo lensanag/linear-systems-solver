@@ -84,6 +84,12 @@
     "parameter": "Parámetro",
     "calculating": "Calculando..."
   },
+  "methodSelector": {
+    "title": "Método de Resolución",
+    "squareRequired": "Solo para sistemas cuadrados",
+    "notAvailableSymbolic": "No disponible en modo simbólico",
+    "squareHint": "Los métodos Cramer, Inversa y LU requieren sistemas cuadrados (n × n)"
+  },
   "tourGuide": {
     "exit": "Salir",
     "prev": "Anterior",

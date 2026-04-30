@@ -2,14 +2,21 @@ import { useStore } from '@/store/useStore';
 import { solveGaussian, solveGaussJordan, solveCramer, solveInverse, solveLU } from '@/engines/numeric';
 import { solveSymbolicGaussian, solveSymbolicGaussJordan } from '@/engines/symbolic';
 import { runSymPySolve } from '@/utils/pyodideLoader';
-import type { SolveResult } from '@/engines/shared/types';
+import type { SolveResult, MethodId, EngineMode } from '@/engines/shared/types';
 import { useTranslation } from 'react-i18next';
 import { MatrixInput } from '@/components/matrix/MatrixInput';
-import { MethodSelector } from '@/components/solver/MethodSelector';
 
 interface SolverPanelProps {
   onSolve: (result: SolveResult) => void;
 }
+
+const METHODS: { id: MethodId; labelKey: string; icon: string; modes: EngineMode[] }[] = [
+  { id: 'gaussian', labelKey: 'methods.gaussian', icon: 'G', modes: ['numeric', 'symbolic'] },
+  { id: 'gauss-jordan', labelKey: 'methods.gauss-jordan', icon: 'GJ', modes: ['numeric', 'symbolic'] },
+  { id: 'cramer', labelKey: 'methods.cramer', icon: 'Cr', modes: ['numeric'] },
+  { id: 'inverse', labelKey: 'methods.inverse', icon: 'Inv', modes: ['numeric'] },
+  { id: 'lu', labelKey: 'methods.lu', icon: 'LU', modes: ['numeric'] },
+];
 
 export function SolverPanel({ onSolve }: SolverPanelProps) {
   const { t } = useTranslation();
@@ -36,6 +43,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
 
   const numRows = coefficients.length;
   const numCols = coefficients[0]?.length ?? 3;
+  const isSquare = numRows === numCols - 1;
 
   const handleExecute = async () => {
     if (!method) {
@@ -114,75 +122,117 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
     }
   };
 
-  return (
-    <div className="p-4">
-      <div className="flex gap-4 mb-4" id="mode-selector">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setMode('numeric')}
-            className={`px-4 py-2 rounded font-medium ${
-              mode === 'numeric'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {t('modes.numeric')}
-          </button>
-          <button
-            onClick={() => setMode('symbolic')}
-            className={`px-4 py-2 rounded font-medium ${
-              mode === 'symbolic'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {t('modes.symbolic')}
-          </button>
-        </div>
+  const isMethodDisabled = (methodId: MethodId): boolean => {
+    if (!isSquare && (methodId === 'cramer' || methodId === 'inverse' || methodId === 'lu')) {
+      return true;
+    }
+    if (mode === 'symbolic' && methodId !== 'gaussian' && methodId !== 'gauss-jordan') {
+      return true;
+    }
+    return false;
+  };
 
-        {mode === 'symbolic' && (
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">{t('solverPanel.parameter')}:</label>
-            <input
-              type="text"
-              value={paramSymbol}
-              onChange={(e) => setParamSymbol(e.target.value.slice(0, 5))}
-              maxLength={5}
-              className="w-16 px-2 py-1 border rounded text-center"
-              placeholder="a"
-            />
+  return (
+    <div className="p-5">
+      <div className="mb-5" id="mode-selector">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className={`text-sm font-medium ${mode === 'numeric' ? 'text-primary' : 'text-secondary'}`}>
+              {t('modes.numeric')}
+            </span>
+            <button
+              onClick={() => setMode(mode === 'numeric' ? 'symbolic' : 'numeric')}
+              className={`
+                relative w-12 h-6 rounded-full border transition-colors flex-shrink-0
+                ${mode === 'numeric' ? 'bg-primary border-primary' : 'bg-secondary border-secondary'}
+              `}
+            >
+              <span
+                className={`
+                  absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform
+                  ${mode === 'numeric' ? '' : 'translate-x-6'}
+                `}
+              />
+            </button>
+            <span className={`text-sm font-medium ${mode === 'symbolic' ? 'text-primary' : 'text-secondary'}`}>
+              {t('modes.symbolic')}
+            </span>
           </div>
+
+          {mode === 'symbolic' && (
+            <div className="flex items-center gap-2 ml-4 pl-4 border-l border-border">
+              <label className="text-xs text-secondary">{t('solverPanel.parameter')}:</label>
+              <input
+                type="text"
+                value={paramSymbol}
+                onChange={(e) => setParamSymbol(e.target.value.slice(0, 5))}
+                maxLength={5}
+                className="w-12 px-2 py-1 border border-border rounded text-center text-sm focus:border-primary focus:outline-none"
+                placeholder="a"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mb-4" id="method-selector">
+        <label className="text-xs text-secondary uppercase tracking-wide mb-2 block">{t('methodSelector.title')}</label>
+        <div className="grid grid-cols-5 gap-2">
+          {METHODS.map((m) => {
+            const disabled = isMethodDisabled(m.id);
+            const isSelected = method === m.id;
+            return (
+              <button
+                key={m.id}
+                onClick={() => !disabled && setMethod(m.id)}
+                disabled={disabled}
+                title={disabled ? (m.modes.length === 1 ? t('methodSelector.squareRequired') : t('methodSelector.notAvailableSymbolic')) : ''}
+                className={`
+                  relative p-2 border text-center transition-all
+                  ${isSelected
+                    ? 'bg-primary text-white border-primary shadow-sm'
+                    : disabled
+                    ? 'bg-gray-50 text-secondary-light border-border cursor-not-allowed opacity-60'
+                    : 'bg-surface text-secondary border-border hover:border-primary hover:text-primary'
+                  }
+                `}
+              >
+                <span className="text-xs font-mono font-bold">{m.icon}</span>
+                <span className="block text-[10px] mt-0.5 truncate">{t(m.labelKey)}</span>
+                {disabled && m.modes.length === 1 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary-light text-white text-[8px] rounded-full flex items-center justify-center">!</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        {!isSquare && (
+          <p className="text-xs text-secondary-light mt-2">{t('methodSelector.squareHint')}</p>
         )}
       </div>
 
-      <MethodSelector
-        mode={mode}
-        rows={numRows}
-        cols={numCols}
-        selectedMethod={method}
-        onSelect={setMethod}
-      />
-
-      <MatrixInput
-        coefficients={coefficients}
-        headers={headers}
-        onCoefficientChange={setCoefficient}
-        onHeaderChange={(i, v) => {
-          const newHeaders = [...headers];
-          newHeaders[i] = v;
-          setHeaders(newHeaders);
-        }}
-        onAddRow={addRow}
-        onAddCol={addCol}
-        onRemoveRow={removeRow}
-        onRemoveCol={removeCol}
-      />
+      <div className="mt-5">
+        <MatrixInput
+          coefficients={coefficients}
+          headers={headers}
+          onCoefficientChange={setCoefficient}
+          onHeaderChange={(i, v) => {
+            const newHeaders = [...headers];
+            newHeaders[i] = v;
+            setHeaders(newHeaders);
+          }}
+          onAddRow={addRow}
+          onAddCol={addCol}
+          onRemoveRow={removeRow}
+          onRemoveCol={removeCol}
+        />
+      </div>
 
       <button
         id="solve-button"
         onClick={handleExecute}
         disabled={isLoading || !method}
-        className="px-6 py-3 bg-green-600 text-white font-bold rounded hover:bg-green-700 disabled:opacity-50"
+        className="mt-5 px-6 py-2.5 bg-primary text-white text-sm font-medium border border-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? t('solverPanel.calculating') : t('actions.execute')}
       </button>

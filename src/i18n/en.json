@@ -84,6 +84,12 @@
     "parameter": "Parameter",
     "calculating": "Calculating..."
   },
+  "methodSelector": {
+    "title": "Solving Method",
+    "squareRequired": "Only for square systems",
+    "notAvailableSymbolic": "Not available in symbolic mode",
+    "squareHint": "Cramer, Inverse and LU methods require square systems (n × n)"
+  },
   "tourGuide": {
     "exit": "Exit",
     "prev": "Prev",

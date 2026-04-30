@@ -31,20 +31,20 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-lg font-bold">{t('exampleSelector.title')}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+      <div className="bg-surface rounded-lg shadow-lg max-w-2xl w-full max-h-[80vh] overflow-hidden border border-border">
+        <div className="p-4 border-b border-border flex justify-between items-center bg-gray-50">
+          <h2 className="text-base font-bold text-secondary-dark">{t('exampleSelector.title')}</h2>
+          <button onClick={onClose} className="text-secondary hover:text-primary text-xl w-6 h-6 flex items-center justify-center">
             ×
           </button>
         </div>
 
         <div className="p-4 overflow-y-auto max-h-[60vh]">
           {loading ? (
-            <p className="text-center text-gray-500">{t('exampleSelector.loading')}</p>
+            <p className="text-center text-secondary text-sm">{t('exampleSelector.loading')}</p>
           ) : (
-            <div className="grid gap-3">
+            <div className="grid gap-2">
               {examples.map((example) => {
                 const disabled = isExampleDisabled(example);
                 const desc = example.description[i18n.language as 'es' | 'en'] || example.description.es;
@@ -53,23 +53,25 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
                     key={example.id}
                     onClick={() => !disabled && onSelect(example)}
                     disabled={disabled}
-                    className={`p-4 rounded border text-left ${
+                    className={`p-3 border border-border text-left ${
                       disabled
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gray-50 hover:bg-gray-100 border-gray-300'
+                        ? 'bg-gray-50 text-secondary-light cursor-not-allowed'
+                        : 'bg-surface hover:bg-gray-50 hover:border-primary'
                     }`}
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold">{example.id}</span>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        example.mode === 'numeric' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                      <span className="font-bold text-sm text-secondary-dark">{example.id}</span>
+                      <span className={`text-xs px-2 py-0.5 border ${
+                        example.mode === 'numeric'
+                          ? 'border-primary/30 text-primary bg-primary/5'
+                          : 'border-purple-200 text-purple-600 bg-purple-50'
                       }`}>
                         {example.mode}
                       </span>
                     </div>
-                    <p className="text-sm">{desc}</p>
+                    <p className="text-xs text-secondary">{desc}</p>
                     {disabled && (
-                      <p className="text-xs text-orange-600 mt-1">
+                      <p className="text-xs text-orange-500 mt-1">
                         {t('exampleSelector.pyodideNotLoaded')}
                       </p>
                     )}

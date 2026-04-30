@@ -66,29 +66,29 @@ export function ExportMenu({ result, previewElementId = 'solution-preview' }: Ex
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 flex items-center gap-2"
+        className="px-3 py-1.5 text-xs bg-surface border border-border text-secondary hover:border-primary hover:text-primary flex items-center gap-1"
       >
         {t('exportMenu.export')}
-        <span className="text-xs">▼</span>
+        <span className="text-[10px]">▼</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-40 bg-white border rounded shadow-lg z-50">
+        <div className="absolute right-0 mt-1 w-32 bg-surface border border-border shadow-sm z-50">
           <button
             onClick={handleExportPDF}
-            className="w-full px-4 py-2 text-left hover:bg-gray-100"
+            className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 border-b border-border"
           >
             {t('exportMenu.pdf')}
           </button>
           <button
             onClick={handleExportImage}
-            className="w-full px-4 py-2 text-left hover:bg-gray-100"
+            className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 border-b border-border"
           >
             {t('exportMenu.png')}
           </button>
           <button
             onClick={handleExportLatex}
-            className="w-full px-4 py-2 text-left hover:bg-gray-100"
+            className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50"
           >
             {t('exportMenu.latex')}
           </button>

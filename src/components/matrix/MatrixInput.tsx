@@ -20,9 +20,9 @@ export function CellInput({ value, onChange, error, disabled }: CellInputProps) 
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
       className={cn(
-        'w-20 h-10 px-2 text-center border rounded',
-        'focus:outline-none focus:ring-2 focus:ring-primary',
-        error ? 'border-red-500 bg-red-50' : 'border-gray-300',
+        'w-16 h-9 px-2 text-center text-sm border border-border rounded',
+        'focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary',
+        error ? 'border-red-400 bg-red-50' : 'bg-surface',
         disabled && 'bg-gray-100 cursor-not-allowed'
       )}
     />
@@ -43,9 +43,9 @@ export function HeaderCell({ value, onChange, error }: HeaderCellProps) {
       onChange={(e) => onChange(e.target.value)}
       maxLength={5}
       className={cn(
-        'w-16 h-8 px-2 text-center text-sm border rounded',
-        'focus:outline-none focus:ring-2 focus:ring-primary',
-        error ? 'border-red-500 bg-red-50' : 'border-gray-300'
+        'w-14 h-7 px-1 text-center text-xs border border-border rounded',
+        'focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary',
+        error ? 'border-red-400 bg-red-50' : 'bg-gray-50'
       )}
     />
   );
@@ -75,11 +75,11 @@ export function MatrixInput({
   const numCoeffCols = headers.length;
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto pb-2">
       <table className="border-collapse">
         <thead>
           <tr>
-            <th className="w-8 p-2"></th>
+            <th className="w-8 p-1"></th>
             {headers.map((header, i) => (
               <th key={i} className="p-1">
                 <div className="flex flex-col items-center gap-1">
@@ -89,7 +89,7 @@ export function MatrixInput({
                   />
                   <button
                     onClick={() => onRemoveCol(i)}
-                    className="text-red-500 hover:text-red-700 text-xs"
+                    className="text-secondary-light hover:text-red-500 text-xs w-4 h-4 flex items-center justify-center"
                     title="Eliminar columna"
                   >
                     ×
@@ -97,15 +97,15 @@ export function MatrixInput({
                 </div>
               </th>
             ))}
-            <th className="p-2 text-gray-500 text-sm">b</th>
-            <th className="w-8 p-2"></th>
+            <th className="p-1 text-secondary text-xs font-normal italic">b</th>
+            <th className="w-8 p-1"></th>
           </tr>
         </thead>
         <tbody>
           {coefficients.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              <td className="p-2 text-gray-500 text-sm text-center">
-                F{rowIndex + 1}
+              <td className="p-1 text-secondary text-xs text-center font-mono">
+                {rowIndex + 1}
               </td>
               {row.slice(0, numCoeffCols).map((cell, colIndex) => (
                 <td key={colIndex} className="p-1">
@@ -115,17 +115,17 @@ export function MatrixInput({
                   />
                 </td>
               ))}
-              <td className="p-1 text-gray-400">|</td>
+              <td className="p-1 text-secondary-light text-sm font-bold">|</td>
               <td className="p-1">
                 <CellInput
                   value={row[numCoeffCols] || ''}
                   onChange={(v) => onCoefficientChange(rowIndex, numCoeffCols, v)}
                 />
               </td>
-              <td className="p-2">
+              <td className="p-1">
                 <button
                   onClick={() => onRemoveRow(rowIndex)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-secondary-light hover:text-red-500 w-4 h-4 flex items-center justify-center text-xs"
                   title="Eliminar fila"
                 >
                   ×
@@ -134,20 +134,20 @@ export function MatrixInput({
             </tr>
           ))}
           <tr>
-            <td className="p-2"></td>
-            <td colSpan={numCoeffCols + 2} className="p-2">
+            <td className="p-1"></td>
+            <td colSpan={numCoeffCols + 2} className="p-1">
               <div className="flex gap-2">
                 <button
                   onClick={onAddRow}
-                  className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                  className="px-2 py-1 text-xs bg-gray-50 text-secondary border border-border hover:border-primary hover:text-primary"
                 >
-                  +Fila
+                  + Fila
                 </button>
                 <button
                   onClick={onAddCol}
-                  className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200"
+                  className="px-2 py-1 text-xs bg-gray-50 text-secondary border border-border hover:border-primary hover:text-primary"
                 >
-                  +Columna
+                  + Columna
                 </button>
               </div>
             </td>
