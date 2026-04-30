@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 import { solveGaussian, solveGaussJordan, solveCramer, solveInverse, solveLU } from '@/engines/numeric';
 import type { SolveResult, Example, HistoryEntry } from '@/engines/shared/types';
@@ -17,9 +17,9 @@ export function AppContent() {
   const [showExamples, setShowExamples] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
-  const [currentResult, setCurrentResult] = useState<SolveResult | null>(null);
+  const [exportResult, setExportResult] = useState<SolveResult | null>(null);
 
-  const { addToHistory, setLanguage, setMethod, setHeaders, setCoefficients, setResult, clearExecution, coefficients, headers, method } = useStore();
+  const { addToHistory, setLanguage, setMethod, setHeaders, setCoefficients, setResult, clearExecution, coefficients, headers, method, steps, solution, hasNoSolution, hasInfiniteSolutions } = useStore();
 
   const rows = coefficients.length;
   const cols = coefficients[0]?.length ?? 3;
@@ -30,77 +30,62 @@ export function AppContent() {
     setLanguage(lang);
   };
 
-  const solveSystem = useCallback((skipHistory = false) => {
-    if (!method) return;
+  const handleSolve = useStore.getState().method ? () => {
+    const currentMethod = useStore.getState().method;
+    const currentCoefficients = useStore.getState().coefficients;
+
+    if (!currentMethod) return;
 
     let result: SolveResult;
 
-    switch (method) {
+    switch (currentMethod) {
       case 'gaussian':
-        result = solveGaussian(coefficients);
+        result = solveGaussian(currentCoefficients);
         break;
       case 'gauss-jordan':
-        result = solveGaussJordan(coefficients);
+        result = solveGaussJordan(currentCoefficients);
         break;
       case 'cramer':
-        result = solveCramer(coefficients);
+        result = solveCramer(currentCoefficients);
         break;
       case 'inverse':
-        result = solveInverse(coefficients);
+        result = solveInverse(currentCoefficients);
         break;
       case 'lu':
-        result = solveLU(coefficients);
+        result = solveLU(currentCoefficients);
         break;
       default:
         result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
     }
 
-    setResult(result);
-    setCurrentResult(result);
+    setResult(result, currentCoefficients, currentMethod);
+    setExportResult(result);
 
-    if (!skipHistory) {
-      const entry = {
-        id: crypto.randomUUID(),
-        label: null,
-        method,
-        rows,
-        cols,
-        headers,
-        coefficients,
-        createdAt: Date.now(),
-      };
-      addToHistory(entry);
-    }
-  }, [method, coefficients, rows, cols, headers, addToHistory, setResult]);
+    const entry = {
+      id: crypto.randomUUID(),
+      label: null,
+      method: currentMethod,
+      rows: currentCoefficients.length,
+      cols: currentCoefficients[0]?.length ?? 3,
+      headers: useStore.getState().headers,
+      coefficients: currentCoefficients,
+      createdAt: Date.now(),
+    };
+    addToHistory(entry);
+  } : null;
 
-  const handleSolve = useCallback((result: SolveResult, skipHistory = false) => {
-    setCurrentResult(result);
-
-    if (!skipHistory) {
-      const { method: m, coefficients: c, headers: h } = useStore.getState();
-      const r = c.length;
-      const cols = c[0]?.length ?? 3;
-      const entry = {
-        id: crypto.randomUUID(),
-        label: null,
-        method: m,
-        rows: r,
-        cols,
-        headers: h,
-        coefficients: c,
-        createdAt: Date.now(),
-      };
-      addToHistory(entry);
-    }
-  }, [addToHistory]);
+  const handleClean = () => {
+    useStore.getState().resetMatrix();
+    setExportResult(null);
+  };
 
   const handleRestore = (entry: HistoryEntry) => {
-    const { clearExecution } = useStore.getState();
     setMethod(entry.method);
     setHeaders(entry.headers);
     setCoefficients(entry.coefficients);
     clearExecution();
     setShowHistory(false);
+
     setTimeout(() => {
       const { method: m, coefficients: c } = useStore.getState();
       if (!m) return;
@@ -127,7 +112,7 @@ export function AppContent() {
       }
 
       setResult(result, c, m);
-      setCurrentResult(result);
+      setExportResult(result);
     }, 0);
   };
 
@@ -194,21 +179,21 @@ export function AppContent() {
       <main className="container mx-auto px-4 py-6">
         <div className="grid lg:grid-cols-2 gap-6 items-start">
           <div className="bg-surface border border-border" id="matrix-editor">
-            <SolverPanel onSolve={handleSolve} onClean={() => setCurrentResult(null)} />
+            <SolverPanel onSolve={handleSolve} onClean={handleClean} />
           </div>
           <div className="bg-surface border border-border relative" id="step-panel">
             <div id="solution-preview">
-              {currentResult && (
+              {steps.length > 0 && exportResult && (
                 <div className="absolute top-3 right-3 z-10" id="export-menu">
-                  <ExportMenu result={currentResult} />
+                  <ExportMenu result={exportResult} />
                 </div>
               )}
               <StepPanel
                 headers={headers}
-                steps={currentResult?.steps || []}
-                solution={currentResult?.solution || null}
-                hasNoSolution={currentResult?.hasNoSolution || false}
-                hasInfiniteSolutions={currentResult?.hasInfiniteSolutions || false}
+                steps={steps}
+                solution={solution}
+                hasNoSolution={hasNoSolution}
+                hasInfiniteSolutions={hasInfiniteSolutions}
                 initialMatrix={coefficients}
                 method={method}
               />
