@@ -23,6 +23,8 @@ interface AppStore {
   isLoading: boolean;
   language: 'es' | 'en';
   history: HistoryEntryType[];
+  lastExecutedCoefficients: string[][] | null;
+  lastExecutedMethod: MethodId | null;
   setMethod: (method: MethodId | null) => void;
   setCoefficients: (coefficients: string[][]) => void;
   setHeaders: (headers: string[]) => void;
@@ -31,13 +33,14 @@ interface AppStore {
   addCol: () => void;
   removeRow: (index: number) => void;
   removeCol: (index: number) => void;
-  setResult: (result: { steps: Step[]; solution: Cell[] | null; hasNoSolution: boolean; hasInfiniteSolutions: boolean }) => void;
+  setResult: (result: { steps: Step[]; solution: Cell[] | null; hasNoSolution: boolean; hasInfiniteSolutions: boolean }, coefficients: string[][], method: MethodId) => void;
   setLoading: (loading: boolean) => void;
   setLanguage: (lang: 'es' | 'en') => void;
   addToHistory: (entry: HistoryEntryType) => void;
   removeFromHistory: (id: string) => void;
   clearHistory: () => void;
   resetMatrix: () => void;
+  clearExecution: () => void;
 }
 
 const generateHeaders = (count: number): string[] => {
@@ -62,6 +65,8 @@ export const useStore = create<AppStore>()(
       isLoading: false,
       language: 'es',
       history: [],
+      lastExecutedCoefficients: null,
+      lastExecutedMethod: null,
 
       setMethod: (method) => set({ method }),
 
@@ -72,7 +77,7 @@ export const useStore = create<AppStore>()(
         const newHeaders = numCols - 1 > currentHeaders.length
           ? [...currentHeaders, ...generateHeaders(numCols - 1 - currentHeaders.length)]
           : currentHeaders.slice(0, numCols - 1);
-        set({ coefficients, headers: newHeaders });
+        set({ coefficients, headers: newHeaders, steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false });
       },
 
       setHeaders: (headers) => set({ headers }),
@@ -82,14 +87,14 @@ export const useStore = create<AppStore>()(
           const newCoeffs = state.coefficients.map((r, ri) =>
             r.map((c, ci) => (ri === row && ci === col ? value : c))
           );
-          return { coefficients: newCoeffs };
+          return { coefficients: newCoeffs, steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
         }),
 
       addRow: () => {
         const { coefficients } = get();
         const numCols = coefficients[0]?.length ?? 3;
         const newRow = Array(numCols).fill('');
-        set({ coefficients: [...coefficients, newRow] });
+        set({ coefficients: [...coefficients, newRow], steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false });
       },
 
       addCol: () => {
@@ -100,14 +105,14 @@ export const useStore = create<AppStore>()(
           newRow.splice(row.length - 1, 0, '');
           return newRow;
         });
-        set({ coefficients: newCoefficients, headers: newHeaders });
+        set({ coefficients: newCoefficients, headers: newHeaders, steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false });
       },
 
       removeRow: (index: number) => {
         const { coefficients } = get();
         if (coefficients.length <= 1) return;
         const newCoefficients = coefficients.filter((_, i) => i !== index);
-        set({ coefficients: newCoefficients });
+        set({ coefficients: newCoefficients, steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false });
       },
 
       removeCol: (index: number) => {
@@ -117,21 +122,25 @@ export const useStore = create<AppStore>()(
         if (index !== numCols - 1) {
           const newCoefficients = coefficients.map(row => row.filter((_, i) => i !== index));
           const newHeaders = headers.filter((_, i) => i !== index);
-          set({ coefficients: newCoefficients, headers: newHeaders });
+          set({ coefficients: newCoefficients, headers: newHeaders, steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false });
         } else {
           const newCoefficients = coefficients.map(row => row.slice(0, -1));
           const newHeaders = headers.slice(0, -1);
-          set({ coefficients: newCoefficients, headers: newHeaders });
+          set({ coefficients: newCoefficients, headers: newHeaders, steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false });
         }
       },
 
-      setResult: (result) =>
-        set({
+      setResult: (result, coefficients, method) => {
+        const coefficientsCopy = coefficients.map(row => [...row]);
+        return set({
           steps: result.steps,
           solution: result.solution,
           hasNoSolution: result.hasNoSolution,
           hasInfiniteSolutions: result.hasInfiniteSolutions,
-        }),
+          lastExecutedCoefficients: coefficientsCopy,
+          lastExecutedMethod: method,
+        });
+      },
 
       setLoading: (isLoading) => set({ isLoading }),
 
@@ -156,6 +165,18 @@ export const useStore = create<AppStore>()(
           solution: null,
           hasNoSolution: false,
           hasInfiniteSolutions: false,
+          lastExecutedCoefficients: null,
+          lastExecutedMethod: null,
+        }),
+
+      clearExecution: () =>
+        set({
+          steps: [],
+          solution: null,
+          hasNoSolution: false,
+          hasInfiniteSolutions: false,
+          lastExecutedCoefficients: null,
+          lastExecutedMethod: null,
         }),
     }),
     {

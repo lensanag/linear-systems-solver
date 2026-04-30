@@ -14,7 +14,8 @@
     "execute": "Solve",
     "clear": "Clear",
     "export": "Export",
-    "save": "Save"
+    "save": "Save",
+    "executed": "Executed"
   },
   "matrix": {
     "addRow": "+Row",

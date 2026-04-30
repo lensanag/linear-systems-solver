@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useStore } from '@/store/useStore';
-import type { SolveResult, Example } from '@/engines/shared/types';
+import { solveGaussian, solveGaussJordan, solveCramer, solveInverse, solveLU } from '@/engines/numeric';
+import type { SolveResult, Example, HistoryEntry } from '@/engines/shared/types';
 import { useTranslation } from 'react-i18next';
 import { SolverPanel } from '@/components/solver/SolverPanel';
 import { StepPanel } from '@/components/solver/StepPanel';
@@ -18,7 +19,7 @@ export function AppContent() {
   const [showAbout, setShowAbout] = useState(false);
   const [currentResult, setCurrentResult] = useState<SolveResult | null>(null);
 
-  const { addToHistory, setLanguage, coefficients, headers, method } = useStore();
+  const { addToHistory, setLanguage, setMethod, setHeaders, setCoefficients, setResult, clearExecution, coefficients, headers, method } = useStore();
 
   const rows = coefficients.length;
   const cols = coefficients[0]?.length ?? 3;
@@ -29,27 +30,111 @@ export function AppContent() {
     setLanguage(lang);
   };
 
-  const handleSolve = useCallback((result: SolveResult) => {
+  const solveSystem = useCallback((skipHistory = false) => {
+    if (!method) return;
+
+    let result: SolveResult;
+
+    switch (method) {
+      case 'gaussian':
+        result = solveGaussian(coefficients);
+        break;
+      case 'gauss-jordan':
+        result = solveGaussJordan(coefficients);
+        break;
+      case 'cramer':
+        result = solveCramer(coefficients);
+        break;
+      case 'inverse':
+        result = solveInverse(coefficients);
+        break;
+      case 'lu':
+        result = solveLU(coefficients);
+        break;
+      default:
+        result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
+    }
+
+    setResult(result);
     setCurrentResult(result);
 
-    const entry = {
-      id: crypto.randomUUID(),
-      label: null,
-      method,
-      rows,
-      cols,
-      headers,
-      coefficients,
-      createdAt: Date.now(),
-    };
-    addToHistory(entry);
-  }, [addToHistory, method, rows, cols, headers, coefficients]);
+    if (!skipHistory) {
+      const entry = {
+        id: crypto.randomUUID(),
+        label: null,
+        method,
+        rows,
+        cols,
+        headers,
+        coefficients,
+        createdAt: Date.now(),
+      };
+      addToHistory(entry);
+    }
+  }, [method, coefficients, rows, cols, headers, addToHistory, setResult]);
+
+  const handleSolve = useCallback((result: SolveResult, skipHistory = false) => {
+    setCurrentResult(result);
+
+    if (!skipHistory) {
+      const { method: m, coefficients: c, headers: h } = useStore.getState();
+      const r = c.length;
+      const cols = c[0]?.length ?? 3;
+      const entry = {
+        id: crypto.randomUUID(),
+        label: null,
+        method: m,
+        rows: r,
+        cols,
+        headers: h,
+        coefficients: c,
+        createdAt: Date.now(),
+      };
+      addToHistory(entry);
+    }
+  }, [addToHistory]);
+
+  const handleRestore = (entry: HistoryEntry) => {
+    const { clearExecution } = useStore.getState();
+    setMethod(entry.method);
+    setHeaders(entry.headers);
+    setCoefficients(entry.coefficients);
+    clearExecution();
+    setShowHistory(false);
+    setTimeout(() => {
+      const { method: m, coefficients: c } = useStore.getState();
+      if (!m) return;
+
+      let result: SolveResult;
+      switch (m) {
+        case 'gaussian':
+          result = solveGaussian(c);
+          break;
+        case 'gauss-jordan':
+          result = solveGaussJordan(c);
+          break;
+        case 'cramer':
+          result = solveCramer(c);
+          break;
+        case 'inverse':
+          result = solveInverse(c);
+          break;
+        case 'lu':
+          result = solveLU(c);
+          break;
+        default:
+          result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
+      }
+
+      setResult(result, c, m);
+      setCurrentResult(result);
+    }, 0);
+  };
 
   const handleExampleSelect = (example: Example) => {
-    const store = useStore.getState();
-    store.setMethod(example.method);
-    store.setHeaders(example.headers);
-    store.setCoefficients(example.coefficients);
+    setMethod(example.method);
+    setHeaders(example.headers);
+    setCoefficients(example.coefficients);
     setShowExamples(false);
   };
 
@@ -132,7 +217,11 @@ export function AppContent() {
         </div>
       </main>
 
-      <HistoryPanel isOpen={showHistory} onClose={() => setShowHistory(false)} />
+      <HistoryPanel
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        onRestore={handleRestore}
+      />
       <ExampleSelector
         isOpen={showExamples}
         onClose={() => setShowExamples(false)}

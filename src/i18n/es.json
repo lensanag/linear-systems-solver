@@ -14,7 +14,8 @@
     "execute": "Ejecutar",
     "clear": "Limpiar",
     "export": "Exportar",
-    "save": "Guardar"
+    "save": "Guardar",
+    "executed": "Ejecutado"
   },
   "matrix": {
     "addRow": "+Fila",

@@ -3,10 +3,10 @@ import { solveGaussian, solveGaussJordan, solveCramer, solveInverse, solveLU } f
 import type { SolveResult, MethodId } from '@/engines/shared/types';
 import { useTranslation } from 'react-i18next';
 import { MatrixInput } from '@/components/matrix/MatrixInput';
-import { Play, RotateCcw } from 'lucide-react';
+import { Play, RotateCcw, Check } from 'lucide-react';
 
 interface SolverPanelProps {
-  onSolve: (result: SolveResult) => void;
+  onSolve: (result: SolveResult, skipHistory?: boolean) => void;
   onClean?: () => void;
 }
 
@@ -18,12 +18,21 @@ const METHODS: { id: MethodId; labelKey: string; icon: string }[] = [
   { id: 'lu', labelKey: 'methods.lu', icon: 'LU' },
 ];
 
+function coefficientsMatch(a: string[][] | null, b: string[][]): boolean {
+  if (!a) return false;
+  const aCopy = a.map(row => [...row]);
+  const bCopy = b.map(row => [...row]);
+  return JSON.stringify(aCopy) === JSON.stringify(bCopy);
+}
+
 export function SolverPanel({ onSolve, onClean }: SolverPanelProps) {
   const { t } = useTranslation();
   const {
     method,
     headers,
     coefficients,
+    lastExecutedCoefficients,
+    lastExecutedMethod,
     setMethod,
     addRow,
     addCol,
@@ -40,6 +49,11 @@ export function SolverPanel({ onSolve, onClean }: SolverPanelProps) {
   const numRows = coefficients.length;
   const numCols = coefficients[0]?.length ?? 3;
   const isSquare = numRows === numCols - 1;
+
+  const hasExecuted = lastExecutedCoefficients !== null &&
+    coefficientsMatch(lastExecutedCoefficients, coefficients) &&
+    lastExecutedMethod === method;
+  const isUnchanged = hasExecuted;
 
   const handleExecute = async () => {
     if (!method) {
@@ -72,8 +86,8 @@ export function SolverPanel({ onSolve, onClean }: SolverPanelProps) {
           result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
       }
 
-      setResult(result);
-      onSolve(result);
+      setResult(result, coefficients, method);
+      onSolve(result, false);
     } catch (error) {
       console.error('Error solving system:', error);
     } finally {
@@ -152,11 +166,29 @@ export function SolverPanel({ onSolve, onClean }: SolverPanelProps) {
         <button
           id="solve-button"
           onClick={handleExecute}
-          disabled={isLoading || !method}
-          className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-sm font-medium border border-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading || !method || isUnchanged}
+          className={`
+            flex items-center gap-2 px-6 py-2.5 text-sm font-medium border
+            ${isUnchanged && method
+              ? 'bg-green-500 border-green-600 text-white cursor-not-allowed'
+              : isLoading || !method
+              ? 'bg-primary border-primary text-white opacity-50 cursor-not-allowed'
+              : 'bg-primary border-primary text-white hover:bg-primary-dark'
+            }
+          `}
+          title={isUnchanged ? 'Matrix unchanged since last execution' : ''}
         >
-          <Play size={16} />
-          {isLoading ? t('solverPanel.calculating') : t('actions.execute')}
+          {isUnchanged && method ? (
+            <>
+              <Check size={16} />
+              {t('actions.executed')}
+            </>
+          ) : (
+            <>
+              <Play size={16} />
+              {isLoading ? t('solverPanel.calculating') : t('actions.execute')}
+            </>
+          )}
         </button>
         <button
           id="clean-button"

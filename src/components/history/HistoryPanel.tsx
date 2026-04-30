@@ -7,13 +7,14 @@ import { X, RotateCcw, Trash2, AlertTriangle, Hash } from 'lucide-react';
 interface HistoryPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  onRestore: (entry: HistoryEntry) => void;
 }
 
-export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
+export function HistoryPanel({ isOpen, onClose, onRestore }: HistoryPanelProps) {
   const { t } = useTranslation();
-  const { history, removeFromHistory, clearHistory, setMethod, setHeaders, setCoefficients, setResult } = useStore();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
+  const { history, removeFromHistory, clearHistory } = useStore();
 
   if (!isOpen) return null;
 
@@ -31,19 +32,6 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
     }).join(' + ');
     const b = firstRow[firstRow.length - 1] || '';
     return `${preview} = ${b}`;
-  };
-
-  const handleRestore = (entry: HistoryEntry) => {
-    setMethod(entry.method);
-    setHeaders(entry.headers);
-    setCoefficients(entry.coefficients);
-    setResult({
-      steps: [],
-      solution: null,
-      hasNoSolution: false,
-      hasInfiniteSolutions: false,
-    });
-    onClose();
   };
 
   return (
@@ -77,7 +65,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => handleRestore(entry)}
+                    onClick={() => onRestore(entry)}
                     className="flex items-center gap-1 px-2 py-1 text-xs bg-primary text-white hover:bg-primary-dark rounded"
                   >
                     <RotateCcw size={12} />
