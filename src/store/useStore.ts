@@ -104,9 +104,12 @@ export const useStore = create<AppStore>()(
 
       addCol: () => {
         const { coefficients, headers } = get();
-        const numCols = coefficients[0]?.length ?? 3;
         const newHeaders = [...headers, `x${headers.length + 1}`];
-        const newCoefficients = coefficients.map(row => [...row, '']);
+        const newCoefficients = coefficients.map(row => {
+          const newRow = [...row];
+          newRow.splice(row.length - 1, 0, '');
+          return newRow;
+        });
         set({ coefficients: newCoefficients, headers: newHeaders });
       },
 
