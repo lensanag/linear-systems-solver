@@ -52,13 +52,12 @@ export const useStore = create<AppStore>()(
     (set) => ({
       mode: 'numeric',
       method: null,
-      rows: 3,
-      cols: 4,
-      headers: generateHeaders(3),
+      rows: 2,
+      cols: 3,
+      headers: generateHeaders(2),
       coefficients: [
-        ['', '', '', ''],
-        ['', '', '', ''],
-        ['', '', '', ''],
+        ['', '', ''],
+        ['', '', ''],
       ],
       paramSymbol: '',
       steps: [],
@@ -111,13 +110,12 @@ export const useStore = create<AppStore>()(
       clearHistory: () => set({ history: [] }),
       resetMatrix: () =>
         set({
-          rows: 3,
-          cols: 4,
-          headers: generateHeaders(3),
+          rows: 2,
+          cols: 3,
+          headers: generateHeaders(2),
           coefficients: [
-            ['', '', '', ''],
-            ['', '', '', ''],
-            ['', '', '', ''],
+            ['', '', ''],
+            ['', '', ''],
           ],
           paramSymbol: '',
           steps: [],
