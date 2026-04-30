@@ -113,32 +113,32 @@ export function solveGaussJordan(coefficients: string[][]): SolveResult {
     currentRow++;
   }
 
+  const pivotCols: boolean[] = Array(numCols).fill(false);
   const solution: { num: number; den: number }[] = Array(numCols).fill(null).map(() => ({ num: 0, den: 1 }));
 
-  for (let col = 0; col < numCols; col++) {
-    let found = false;
-    for (let row = 0; row < numRows; row++) {
+  for (let row = 0; row < numRows; row++) {
+    let pivotCol = -1;
+    for (let col = 0; col < numCols; col++) {
       if (!isZero(augmentedMatrix[row][col].num, augmentedMatrix[row][col].den)) {
-        let isPivotCol = true;
+        let isOnlyNonZero = true;
         for (let r = 0; r < numRows; r++) {
           if (r !== row && !isZero(augmentedMatrix[r][col].num, augmentedMatrix[r][col].den)) {
-            isPivotCol = false;
+            isOnlyNonZero = false;
             break;
           }
         }
-        if (isPivotCol) {
-          solution[col] = augmentedMatrix[row][numCols];
-          found = true;
+        if (isOnlyNonZero) {
+          pivotCol = col;
           break;
         }
       }
     }
-    if (!found) {
-      solution[col] = { num: 0, den: 1 };
+    if (pivotCol !== -1) {
+      pivotCols[pivotCol] = true;
+      solution[pivotCol] = augmentedMatrix[row][numCols];
     }
   }
 
-  let hasInfiniteSolutions = false;
   let hasNoSolution = false;
   for (let row = 0; row < numRows; row++) {
     let allZero = true;
@@ -156,12 +156,8 @@ export function solveGaussJordan(coefficients: string[][]): SolveResult {
     }
   }
 
-  for (let col = 0; col < numCols; col++) {
-    if (solution[col].num === 0 && solution[col].den === 1) {
-      hasInfiniteSolutions = true;
-      break;
-    }
-  }
+  const numPivots = pivotCols.filter(p => p).length;
+  const hasInfiniteSolutions = !hasNoSolution && numPivots < numCols;
 
   return {
     steps,

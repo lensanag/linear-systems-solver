@@ -126,13 +126,19 @@ export function solveGaussian(coefficients: string[][]): SolveResult {
     solution[pivotCol] = { num: result.num, den: result.den };
   }
 
-  let hasInfiniteSolutions = false;
-  for (let col = 0; col < numCols; col++) {
-    if (solution[col].num === 0 && solution[col].den === 1) {
-      hasInfiniteSolutions = true;
-      break;
+  let pivotColCount = 0;
+  for (let row = 0; row < numRows; row++) {
+    let found = false;
+    for (let col = 0; col < numCols; col++) {
+      if (!isZero(augmentedMatrix[row][col].num, augmentedMatrix[row][col].den)) {
+        found = true;
+        break;
+      }
     }
+    if (found) pivotColCount++;
   }
+
+  const hasInfiniteSolutions = pivotColCount < numCols;
 
   return {
     steps,
