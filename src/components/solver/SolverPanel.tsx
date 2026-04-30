@@ -5,6 +5,7 @@ import { runSymPySolve } from '@/utils/pyodideLoader';
 import type { SolveResult, MethodId, EngineMode } from '@/engines/shared/types';
 import { useTranslation } from 'react-i18next';
 import { MatrixInput } from '@/components/matrix/MatrixInput';
+import { Play, RotateCcw } from 'lucide-react';
 
 interface SolverPanelProps {
   onSolve: (result: SolveResult) => void;
@@ -240,15 +241,17 @@ export function SolverPanel({ onSolve, onClean }: SolverPanelProps) {
           id="solve-button"
           onClick={handleExecute}
           disabled={isLoading || !method}
-          className="px-6 py-2.5 bg-primary text-white text-sm font-medium border border-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-sm font-medium border border-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          <Play size={16} />
           {isLoading ? t('solverPanel.calculating') : t('actions.execute')}
         </button>
         <button
           id="clean-button"
           onClick={handleClean}
-          className="px-6 py-2.5 bg-orange-500 text-white text-sm font-medium border border-orange-600 hover:bg-orange-600"
+          className="flex items-center gap-2 px-6 py-2.5 bg-orange-500 text-white text-sm font-medium border border-orange-600 hover:bg-orange-600"
         >
+          <RotateCcw size={16} />
           {t('actions.clear')}
         </button>
       </div>
