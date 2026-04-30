@@ -74,6 +74,16 @@ export function StepPanel({
     );
   }
 
+  const getStepPhase = (step: Step): string => {
+    if (step.descriptionKey) {
+      const translated = t(step.descriptionKey);
+      if (translated !== step.descriptionKey) {
+        return translated;
+      }
+    }
+    return step.phase;
+  };
+
   return (
     <div className="p-5">
       <h2 className="text-lg font-bold text-text-primary mb-4 border-b border-border pb-2">{t('stepPanel.title')}</h2>
@@ -97,7 +107,7 @@ export function StepPanel({
               <span className="bg-secondary text-white text-xs px-2 py-0.5 rounded-full font-medium">
                 {index + 1}
               </span>
-              <h3 className="font-semibold text-sm text-text-primary">{step.phase}</h3>
+              <h3 className="font-semibold text-sm text-text-primary">{getStepPhase(step)}</h3>
             </div>
             <p className="text-xs text-text-secondary mb-2 font-mono">{step.operationLabel}</p>
             <MatrixRenderer matrix={step.matrixAfter} />

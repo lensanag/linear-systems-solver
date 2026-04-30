@@ -120,7 +120,7 @@ export function solveInverse(coefficients: string[][]): SolveResult {
   }
 
   steps.push(createStep(
-    'Determinante de A',
+    'steps.inverse.detA',
     `det(A) = ${fractionToString(detA.num, detA.den)}`,
     coeffMatrix,
     coeffMatrix,
@@ -134,7 +134,7 @@ export function solveInverse(coefficients: string[][]): SolveResult {
   }
 
   steps.push(createStep(
-    'Matriz Inversa',
+    'steps.inverse.calculated',
     'A⁻¹ calculada mediante Gauss-Jordan',
     coeffMatrix,
     inverseMatrix,

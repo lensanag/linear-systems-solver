@@ -39,7 +39,7 @@ export function solveLU(coefficients: string[][]): SolveResult {
   );
 
   steps.push(createStep(
-    'Matrices L y U',
+    'steps.lu.decompose',
     'Descomposición LU con pivoteo parcial',
     coeffMatrix,
     coeffMatrix,
@@ -93,7 +93,7 @@ export function solveLU(coefficients: string[][]): SolveResult {
   }
 
   steps.push(createStep(
-    'Descomposición completada',
+    'steps.lu.matrices',
     'L y U calculadas',
     L,
     U,
@@ -115,7 +115,7 @@ export function solveLU(coefficients: string[][]): SolveResult {
   }
 
   steps.push(createStep(
-    'Sustitución hacia adelante',
+    'steps.lu.forward',
     'L*y = b resuelto',
     L,
     yVector.map(v => [v]),
@@ -139,7 +139,7 @@ export function solveLU(coefficients: string[][]): SolveResult {
   }
 
   steps.push(createStep(
-    'Sustitución hacia atrás',
+    'steps.lu.backward',
     'U*x = y resuelto',
     U,
     solution.map(v => [v]),

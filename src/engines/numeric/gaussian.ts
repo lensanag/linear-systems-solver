@@ -44,7 +44,7 @@ export function solveGaussian(coefficients: string[][]): SolveResult {
       [augmentedMatrix[col], augmentedMatrix[pivotRow]] = [augmentedMatrix[pivotRow], augmentedMatrix[col]];
       const matrixAfter = cloneMatrix(augmentedMatrix);
       steps.push(createStep(
-        'Pivoting',
+        'steps.pivoting.swap',
         `F${col + 1} ↔ F${pivotRow + 1}`,
         matrixBefore,
         matrixAfter,
@@ -77,7 +77,7 @@ export function solveGaussian(coefficients: string[][]): SolveResult {
       const matrixAfter = cloneMatrix(augmentedMatrix);
       const factorStr = fractionToString(factorResult.num, factorResult.den);
       steps.push(createStep(
-        'Eliminación hacia adelante',
+        'steps.forward_elimination',
         `F${row + 1} → F${row + 1} - (${factorStr})F${col + 1}`,
         matrixBefore,
         matrixAfter,

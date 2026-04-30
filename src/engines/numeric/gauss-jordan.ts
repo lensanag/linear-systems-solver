@@ -49,7 +49,7 @@ export function solveGaussJordan(coefficients: string[][]): SolveResult {
       [augmentedMatrix[currentRow], augmentedMatrix[pivotRow]] = [augmentedMatrix[pivotRow], augmentedMatrix[currentRow]];
       const matrixAfter = cloneMatrix(augmentedMatrix);
       steps.push(createStep(
-        'Pivoting',
+        'steps.pivoting.swap',
         `F${currentRow + 1} ↔ F${pivotRow + 1}`,
         matrixBefore,
         matrixAfter,
@@ -72,7 +72,7 @@ export function solveGaussJordan(coefficients: string[][]): SolveResult {
       const matrixAfter = cloneMatrix(augmentedMatrix);
       const pivotStr = fractionToString(pivotInverse.num, pivotInverse.den);
       steps.push(createStep(
-        'Normalización del pivote',
+        'steps.normalize_pivot',
         `F${currentRow + 1} → (${pivotStr})F${currentRow + 1}`,
         matrixBefore,
         matrixAfter,
@@ -101,7 +101,7 @@ export function solveGaussJordan(coefficients: string[][]): SolveResult {
       const matrixAfter = cloneMatrix(augmentedMatrix);
       const factorStr = fractionToString(factor.num, factor.den);
       steps.push(createStep(
-        'Eliminación hacia atrás',
+        'steps.backward_elimination',
         `F${row + 1} → F${row + 1} + (${factorStr})F${currentRow + 1}`,
         matrixBefore,
         matrixAfter,

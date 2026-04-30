@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useTranslation } from 'react-i18next';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -72,6 +73,7 @@ export function MatrixInput({
   onRemoveRow,
   onRemoveCol,
 }: MatrixInputProps) {
+  const { t } = useTranslation();
   const numCoeffCols = headers.length;
 
   return (
@@ -90,7 +92,7 @@ export function MatrixInput({
                   <button
                     onClick={() => onRemoveCol(i)}
                     className="text-text-muted hover:text-red-500 text-xs w-4 h-4 flex items-center justify-center"
-                    title="Eliminar columna"
+                    title={t('matrix.removeCol')}
                   >
                     ×
                   </button>
@@ -126,7 +128,7 @@ export function MatrixInput({
                 <button
                   onClick={() => onRemoveRow(rowIndex)}
                   className="text-text-muted hover:text-red-500 w-4 h-4 flex items-center justify-center text-xs"
-                  title="Eliminar fila"
+                  title={t('matrix.removeRow')}
                 >
                   ×
                 </button>
@@ -141,13 +143,13 @@ export function MatrixInput({
                   onClick={onAddRow}
                   className="px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary"
                 >
-                  + Fila
+                  {t('matrix.addRow')}
                 </button>
                 <button
                   onClick={onAddCol}
                   className="px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary"
                 >
-                  + Columna
+                  {t('matrix.addCol')}
                 </button>
               </div>
             </td>

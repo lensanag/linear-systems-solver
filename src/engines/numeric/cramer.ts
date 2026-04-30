@@ -64,7 +64,7 @@ export function solveCramer(coefficients: string[][]): SolveResult {
   const bVector: { num: number; den: number }[] = matrix.map(row => row[numCols] as { num: number; den: number });
 
   steps.push(createStep(
-    'Matriz aumentada',
+    'steps.cramer.augmented',
     'Sistema original',
     coeffMatrix,
     matrix.map(row => row.slice(0, numCols)),
@@ -79,7 +79,7 @@ export function solveCramer(coefficients: string[][]): SolveResult {
 
   const detAStr = fractionToString(detA.num, detA.den);
   steps.push(createStep(
-    'Determinante de A',
+    'steps.cramer.detA',
     `det(A) = ${detAStr}`,
     coeffMatrix,
     coeffMatrix,
@@ -109,7 +109,7 @@ export function solveCramer(coefficients: string[][]): SolveResult {
     const detColStr = fractionToString(detCol.num, detCol.den);
     const resultStr = fractionToString(result.num, result.den);
     steps.push(createStep(
-      `Reemplazar columna ${col + 1}`,
+      'steps.cramer.replace',
       `x${col + 1} = det(A_${col + 1}) / det(A) = ${detColStr} / ${detAStr} = ${resultStr}`,
       coeffMatrix,
       modifiedMatrix,
