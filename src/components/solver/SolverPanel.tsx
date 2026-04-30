@@ -110,8 +110,27 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
     }
   };
 
-  const handleRemoveRow = () => {
-    setDimensions(Math.max(1, rows - 1), cols);
+  const handleRemoveRow = (index: number) => {
+    const newRows = Math.max(1, rows - 1);
+    if (index !== rows - 1) {
+      const newCoefficients = coefficients.filter((_, i) => i !== index);
+      useStore.getState().setDimensions(newRows, cols);
+      useStore.setState({ coefficients: newCoefficients });
+    } else {
+      setDimensions(newRows, cols);
+    }
+  };
+
+  const handleRemoveCol = (index: number) => {
+    const newCols = Math.max(2, cols - 1);
+    if (index !== cols - 1) {
+      const newCoefficients = coefficients.map(row => row.filter((_, i) => i !== index));
+      const newHeaders = headers.filter((_, i) => i !== index);
+      useStore.getState().setDimensions(rows, newCols);
+      useStore.setState({ coefficients: newCoefficients, headers: newHeaders });
+    } else {
+      setDimensions(rows, newCols);
+    }
   };
 
   return (
@@ -175,7 +194,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
         onAddRow={() => setDimensions(rows + 1, cols)}
         onAddCol={() => setDimensions(rows, cols + 1)}
         onRemoveRow={handleRemoveRow}
-        onRemoveCol={() => setDimensions(rows, Math.max(2, cols - 1))}
+        onRemoveCol={handleRemoveCol}
       />
 
       <button
