@@ -8,8 +8,10 @@ import { HistoryPanel } from '@/components/history/HistoryPanel';
 import { ExampleSelector } from '@/components/tutorial/ExampleSelector';
 import { ExportMenu } from '@/components/export/ExportMenu';
 import { TourGuide } from '@/components/tutorial/TourGuide';
+import { usePyodide } from '@/hooks/usePyodide';
 
 export function AppContent() {
+  usePyodide();
   const { t, i18n } = useTranslation();
   const [showHistory, setShowHistory] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
@@ -100,7 +102,7 @@ export function AppContent() {
       </nav>
 
       <main className="container mx-auto p-4">
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-[1fr_1fr] gap-6 items-start">
           <div className="bg-white rounded-lg shadow" id="matrix-editor">
             <SolverPanel onSolve={handleSolve} />
           </div>

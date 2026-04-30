@@ -39,13 +39,13 @@ function CellRenderer({ cell }: { cell: Cell }) {
 
 function MatrixRenderer({ matrix }: { matrix: Cell[][] }) {
   return (
-    <div className="overflow-x-auto my-2">
+    <div className="my-2">
       <table className="border-collapse mx-auto">
         <tbody>
           {matrix.map((row, ri) => (
             <tr key={ri}>
               {row.map((cell, ci) => (
-                <td key={ci} className="border border-gray-400 px-3 py-1 text-center min-w-[60px]">
+                <td key={ci} className="border border-gray-400 px-2 py-1 text-center">
                   <CellRenderer cell={cell} />
                 </td>
               ))}
