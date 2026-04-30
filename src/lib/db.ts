@@ -7,7 +7,7 @@ export class LinearSystemsDB extends Dexie {
   constructor() {
     super('linear_systems');
     this.version(1).stores({
-      systems: 'id, mode, method, createdAt',
+      systems: 'id, method, createdAt',
     });
   }
 }

@@ -2,7 +2,6 @@
   "examples": [
     {
       "id": "EJ-01",
-      "mode": "numeric",
       "dimensions": { "rows": 3, "cols": 4 },
       "headers": ["x₁", "x₂", "x₃"],
       "coefficients": [
@@ -19,7 +18,6 @@
     },
     {
       "id": "EJ-02",
-      "mode": "numeric",
       "dimensions": { "rows": 3, "cols": 4 },
       "headers": ["x₁", "x₂", "x₃"],
       "coefficients": [
@@ -36,7 +34,6 @@
     },
     {
       "id": "EJ-03",
-      "mode": "numeric",
       "dimensions": { "rows": 3, "cols": 4 },
       "headers": ["x₁", "x₂", "x₃"],
       "coefficients": [
@@ -53,7 +50,6 @@
     },
     {
       "id": "EJ-04",
-      "mode": "numeric",
       "dimensions": { "rows": 3, "cols": 4 },
       "headers": ["x₁", "x₂", "x₃"],
       "coefficients": [
@@ -70,7 +66,6 @@
     },
     {
       "id": "EJ-05",
-      "mode": "numeric",
       "dimensions": { "rows": 3, "cols": 4 },
       "headers": ["x₁", "x₂", "x₃"],
       "coefficients": [
@@ -87,7 +82,6 @@
     },
     {
       "id": "EJ-06",
-      "mode": "numeric",
       "dimensions": { "rows": 2, "cols": 4 },
       "headers": ["x₁", "x₂"],
       "coefficients": [
@@ -104,7 +98,6 @@
     },
     {
       "id": "EJ-07",
-      "mode": "numeric",
       "dimensions": { "rows": 2, "cols": 4 },
       "headers": ["x₁", "x₂"],
       "coefficients": [
@@ -119,57 +112,6 @@
       "hasInfiniteSolutions": true,
       "freeVariables": ["x₂"],
       "descriptionKey": "examples.EJ-07.description"
-    },
-    {
-      "id": "EJ-08",
-      "mode": "symbolic",
-      "dimensions": { "rows": 2, "cols": 3 },
-      "headers": ["x", "y"],
-      "paramSymbol": "a",
-      "coefficients": [
-        ["2a", "3", "14"],
-        ["4", "5a", "a+7"]
-      ],
-      "method": "gaussian",
-      "description": {
-        "es": "Sistema simbólico 2×2 con parámetro 'a'",
-        "en": "Symbolic 2×2 system with parameter 'a'"
-      },
-      "descriptionKey": "examples.EJ-08.description"
-    },
-    {
-      "id": "EJ-09",
-      "mode": "symbolic",
-      "dimensions": { "rows": 2, "cols": 3 },
-      "headers": ["x", "y"],
-      "paramSymbol": "a",
-      "coefficients": [
-        ["a", "1", "1"],
-        ["1", "a", "1"]
-      ],
-      "method": "gauss-jordan",
-      "description": {
-        "es": "Sistema simbólico — análisis de casos (det = a²-4)",
-        "en": "Symbolic system — case analysis (det = a²-4)"
-      },
-      "caseAnalysis": {
-        "det": "a^2 - 4",
-        "cases": [
-          {
-            "condition": "a ≠ 2, a ≠ -2",
-            "description": { "es": "solución única", "en": "unique solution" }
-          },
-          {
-            "condition": "a = 2",
-            "description": { "es": "infinitas soluciones", "en": "infinitely many solutions" }
-          },
-          {
-            "condition": "a = -2",
-            "description": { "es": "sin solución", "en": "no solution" }
-          }
-        ]
-      },
-      "descriptionKey": "examples.EJ-09.description"
     }
   ]
 }

@@ -20,14 +20,6 @@ interface TourStep {
 const TOUR_STEPS: Record<string, TourStep[]> = {
   en: [
     {
-      element: '#mode-selector',
-      popover: {
-        title: 'Mode Selection',
-        description: 'Choose between Numeric mode (fraction arithmetic) or Symbolic mode (with parameters).',
-        position: 'bottom',
-      },
-    },
-    {
       element: '#method-selector',
       popover: {
         title: 'Method Selection',
@@ -69,14 +61,6 @@ const TOUR_STEPS: Record<string, TourStep[]> = {
     },
   ],
   es: [
-    {
-      element: '#mode-selector',
-      popover: {
-        title: 'Selección de Modo',
-        description: 'Elige entre modo Numérico (aritmética de fracciones) o Simbólico (con parámetros).',
-        position: 'bottom',
-      },
-    },
     {
       element: '#method-selector',
       popover: {
