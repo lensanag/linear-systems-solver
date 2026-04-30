@@ -3,10 +3,6 @@
     "title": "Solver de Sistemas de Ecuaciones Lineales",
     "subtitle": "Resolución paso a paso mediante operaciones matriciales"
   },
-  "modes": {
-    "numeric": "Numérico",
-    "symbolic": "Simbólico"
-  },
   "methods": {
     "gaussian": "Eliminación Gaussiana",
     "gauss-jordan": "Gauss-Jordan (RREF)",
@@ -31,8 +27,7 @@
     "invalidFraction": "Fracción inválida",
     "duplicateHeader": "Encabezado duplicado",
     "paramCollision": "El símbolo coincide con un encabezado",
-    "selectMethod": "Selecciona un método",
-    "enterParamSymbol": "Ingresa un símbolo para el parámetro"
+    "selectMethod": "Selecciona un método"
   },
   "results": {
     "noSolution": "Sistema sin solución (inconsistente)",
@@ -85,13 +80,11 @@
     "methodUsed": "Método utilizado"
   },
   "solverPanel": {
-    "parameter": "Parámetro",
     "calculating": "Calculando..."
   },
   "methodSelector": {
     "title": "Método de Resolución",
     "squareRequired": "Solo para sistemas cuadrados",
-    "notAvailableSymbolic": "No disponible en modo simbólico",
     "squareHint": "Los métodos Cramer, Inversa y LU requieren sistemas cuadrados (n × n)"
   },
   "tourGuide": {
@@ -102,8 +95,7 @@
   },
   "exampleSelector": {
     "title": "Ejemplos",
-    "loading": "Cargando ejemplos...",
-    "pyodideNotLoaded": "Pyodide no está cargado — ejemplo simbólico deshabilitado"
+    "loading": "Cargando ejemplos..."
   },
   "exportMenu": {
     "export": "Exportar",

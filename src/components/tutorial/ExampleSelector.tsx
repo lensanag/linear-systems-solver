@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '@/store/useStore';
 import type { Example } from '@/engines/shared/types';
-import { X, BookOpen, Calculator, AlertCircle } from 'lucide-react';
+import { X, BookOpen, Calculator } from 'lucide-react';
 
 interface ExampleSelectorProps {
   isOpen: boolean;
@@ -14,7 +13,6 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
   const { t, i18n } = useTranslation();
   const [examples, setExamples] = useState<Example[]>([]);
   const [loading, setLoading] = useState(true);
-  const { pyodideLoaded } = useStore();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -26,10 +24,6 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
   }, [isOpen]);
 
   if (!isOpen) return null;
-
-  const isExampleDisabled = (example: Example): boolean => {
-    return example.mode === 'symbolic' && !pyodideLoaded;
-  };
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
@@ -53,40 +47,24 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
           ) : (
             <div className="grid gap-2">
               {examples.map((example) => {
-                const disabled = isExampleDisabled(example);
                 const desc = example.description[i18n.language as 'es' | 'en'] || example.description.es;
                 return (
                   <button
                     key={example.id}
-                    onClick={() => !disabled && onSelect(example)}
-                    disabled={disabled}
-                    className={`p-3 border border-border text-left rounded ${
-                      disabled
-                        ? 'bg-muted text-text-muted cursor-not-allowed'
-                        : 'bg-surface hover:bg-muted hover:border-primary'
-                    }`}
+                    onClick={() => onSelect(example)}
+                    className="p-3 border border-border text-left rounded bg-surface hover:bg-muted hover:border-primary"
                   >
                     <div className="flex justify-between items-center mb-1">
                       <span className="flex items-center gap-1 font-bold text-sm text-text-primary">
                         <Calculator size={14} className="text-primary" />
                         {example.id}
                       </span>
-                      <span className={`flex items-center gap-1 text-xs px-2 py-0.5 border rounded ${
-                        example.mode === 'numeric'
-                          ? 'border-primary/30 text-primary bg-primary/5'
-                          : 'border-purple-200 text-purple-600 bg-purple-50'
-                      }`}>
-                        {example.mode === 'numeric' ? <Calculator size={10} /> : <BookOpen size={10} />}
-                        {example.mode}
+                      <span className="flex items-center gap-1 text-xs px-2 py-0.5 border border-primary/30 text-primary bg-primary/5 rounded">
+                        <Calculator size={10} />
+                        {example.method}
                       </span>
                     </div>
                     <p className="text-xs text-text-secondary">{desc}</p>
-                    {disabled && (
-                      <p className="flex items-center gap-1 text-xs text-orange-500 mt-1">
-                        <AlertCircle size={12} />
-                        {t('exampleSelector.pyodideNotLoaded')}
-                      </p>
-                    )}
                   </button>
                 );
               })}

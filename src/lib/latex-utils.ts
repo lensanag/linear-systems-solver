@@ -5,12 +5,9 @@ export function fractionToLatex(num: number, den: number): string {
   return `\\frac{${num}}{${den}}`;
 }
 
-export function cellToLatex(cell: { type: string; num?: number; den?: number; latex?: string }): string {
+export function cellToLatex(cell: { type: string; num?: number; den?: number }): string {
   if (cell.type === 'fraction' && cell.num !== undefined && cell.den !== undefined) {
     return fractionToLatex(cell.num, cell.den);
-  }
-  if (cell.type === 'symbolic' && cell.latex) {
-    return cell.latex;
   }
   return '0';
 }

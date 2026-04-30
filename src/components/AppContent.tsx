@@ -9,10 +9,8 @@ import { ExampleSelector } from '@/components/tutorial/ExampleSelector';
 import { ExportMenu } from '@/components/export/ExportMenu';
 import { TourGuide } from '@/components/tutorial/TourGuide';
 import { AboutModal } from '@/components/AboutModal';
-import { usePyodide } from '@/hooks/usePyodide';
 
 export function AppContent() {
-  usePyodide();
   const { t, i18n } = useTranslation();
   const [showHistory, setShowHistory] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
@@ -20,7 +18,7 @@ export function AppContent() {
   const [showAbout, setShowAbout] = useState(false);
   const [currentResult, setCurrentResult] = useState<SolveResult | null>(null);
 
-  const { addToHistory, setLanguage, coefficients, headers, mode, method, paramSymbol } = useStore();
+  const { addToHistory, setLanguage, coefficients, headers, method } = useStore();
 
   const rows = coefficients.length;
   const cols = coefficients[0]?.length ?? 3;
@@ -37,27 +35,21 @@ export function AppContent() {
     const entry = {
       id: crypto.randomUUID(),
       label: null,
-      mode,
       method,
       rows,
       cols,
       headers,
       coefficients,
-      paramSymbol,
       createdAt: Date.now(),
     };
     addToHistory(entry);
-  }, [addToHistory, mode, method, rows, cols, headers, coefficients, paramSymbol]);
+  }, [addToHistory, method, rows, cols, headers, coefficients]);
 
   const handleExampleSelect = (example: Example) => {
     const store = useStore.getState();
-    store.setMode(example.mode);
     store.setMethod(example.method);
     store.setHeaders(example.headers);
     store.setCoefficients(example.coefficients);
-    if (example.paramSymbol) {
-      store.setParamSymbol(example.paramSymbol);
-    }
     setShowExamples(false);
   };
 

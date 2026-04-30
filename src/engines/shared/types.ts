@@ -4,13 +4,7 @@ export interface FractionCell {
   den: number;
 }
 
-export interface SymbolicCell {
-  type: 'symbolic';
-  expression: string;
-  latex: string;
-}
-
-export type Cell = FractionCell | SymbolicCell;
+export type Cell = FractionCell;
 
 export type MethodId =
   | 'gaussian'
@@ -18,8 +12,6 @@ export type MethodId =
   | 'cramer'
   | 'inverse'
   | 'lu';
-
-export type EngineMode = 'numeric' | 'symbolic';
 
 export interface Step {
   phase: string;
@@ -51,24 +43,20 @@ export interface CaseAnalysis {
 export interface SystemEntry {
   id: string;
   label: string | null;
-  mode: EngineMode;
   method: MethodId | null;
   rows: number;
   cols: number;
   headers: string[];
   coefficients: string[][];
-  paramSymbol: string | null;
   createdAt: number;
 }
 
 export interface Example {
   id: string;
-  mode: EngineMode;
   dimensions: { rows: number; cols: number };
   headers: string[];
   coefficients: string[][];
   method: MethodId;
-  paramSymbol?: string;
   description: { es: string; en: string };
   descriptionKey: string;
   hasNoSolution?: boolean;
@@ -80,12 +68,10 @@ export interface Example {
 export interface HistoryEntry {
   id: string;
   label: string | null;
-  mode: EngineMode;
   method: MethodId | null;
   rows: number;
   cols: number;
   headers: string[];
   coefficients: string[][];
-  paramSymbol: string;
   createdAt: number;
 }

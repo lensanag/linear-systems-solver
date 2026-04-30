@@ -23,13 +23,9 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
 
   const handleRestore = (entry: HistoryEntry) => {
     const store = useStore.getState();
-    store.setMode(entry.mode);
     store.setMethod(entry.method);
     store.setHeaders(entry.headers);
     store.setCoefficients(entry.coefficients);
-    if (entry.paramSymbol) {
-      store.setParamSymbol(entry.paramSymbol);
-    }
     onClose();
   };
 
@@ -56,7 +52,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
                   <span className="text-xs text-text-muted">{formatDate(entry.createdAt)}</span>
                 </div>
                 <p className="text-xs text-text-secondary mb-2">
-                  {entry.mode} | {entry.method || t('history.noMethod')} | {entry.rows}×{entry.cols}
+                  {entry.method || t('history.noMethod')} | {entry.rows}×{entry.cols}
                 </p>
                 <div className="flex gap-2">
                   <button

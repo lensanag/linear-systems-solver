@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import i18n from '@/i18n';
-import type { EngineMode, MethodId, Cell, HistoryEntry as HistoryEntryType } from '@/engines/shared/types';
+import type { MethodId, Cell, HistoryEntry as HistoryEntryType } from '@/engines/shared/types';
 
 interface Step {
   phase: string;
@@ -13,20 +13,16 @@ interface Step {
 }
 
 interface AppStore {
-  mode: EngineMode;
   method: MethodId | null;
   headers: string[];
   coefficients: string[][];
-  paramSymbol: string;
   steps: Step[];
   solution: Cell[] | null;
   hasNoSolution: boolean;
   hasInfiniteSolutions: boolean;
   isLoading: boolean;
-  pyodideLoaded: boolean;
   language: 'es' | 'en';
   history: HistoryEntryType[];
-  setMode: (mode: EngineMode) => void;
   setMethod: (method: MethodId | null) => void;
   setCoefficients: (coefficients: string[][]) => void;
   setHeaders: (headers: string[]) => void;
@@ -35,10 +31,8 @@ interface AppStore {
   addCol: () => void;
   removeRow: (index: number) => void;
   removeCol: (index: number) => void;
-  setParamSymbol: (symbol: string) => void;
   setResult: (result: { steps: Step[]; solution: Cell[] | null; hasNoSolution: boolean; hasInfiniteSolutions: boolean }) => void;
   setLoading: (loading: boolean) => void;
-  setPyodideLoaded: (loaded: boolean) => void;
   setLanguage: (lang: 'es' | 'en') => void;
   addToHistory: (entry: HistoryEntryType) => void;
   removeFromHistory: (id: string) => void;
@@ -58,21 +52,17 @@ const DEFAULT_COEFFICIENTS = [
 export const useStore = create<AppStore>()(
   persist(
     (set, get) => ({
-      mode: 'numeric',
       method: null,
       headers: generateHeaders(2),
       coefficients: [...DEFAULT_COEFFICIENTS.map(row => [...row])],
-      paramSymbol: '',
       steps: [],
       solution: null,
       hasNoSolution: false,
       hasInfiniteSolutions: false,
       isLoading: false,
-      pyodideLoaded: false,
       language: 'es',
       history: [],
 
-      setMode: (mode) => set({ mode }),
       setMethod: (method) => set({ method }),
 
       setCoefficients: (coefficients) => {
@@ -135,8 +125,6 @@ export const useStore = create<AppStore>()(
         }
       },
 
-      setParamSymbol: (paramSymbol) => set({ paramSymbol }),
-
       setResult: (result) =>
         set({
           steps: result.steps,
@@ -146,8 +134,6 @@ export const useStore = create<AppStore>()(
         }),
 
       setLoading: (isLoading) => set({ isLoading }),
-
-      setPyodideLoaded: (pyodideLoaded) => set({ pyodideLoaded }),
 
       setLanguage: (language) => {
         i18n.changeLanguage(language);
@@ -166,7 +152,6 @@ export const useStore = create<AppStore>()(
         set({
           headers: generateHeaders(2),
           coefficients: [...DEFAULT_COEFFICIENTS.map(row => [...row])],
-          paramSymbol: '',
           steps: [],
           solution: null,
           hasNoSolution: false,
