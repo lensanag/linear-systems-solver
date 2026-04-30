@@ -33,8 +33,10 @@ export function HistoryPanel({ isOpen, onClose, onRestore }: HistoryPanelProps) 
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 w-80 bg-surface shadow-xl z-50 flex flex-col border-l border-border">
-      <div className="p-4 border-b border-border flex justify-between items-center bg-muted">
+    <div className="fixed inset-0 z-50 flex">
+      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative ml-auto w-80 bg-surface shadow-xl flex flex-col border-l border-border">
+        <div className="p-4 border-b border-border flex justify-between items-center bg-muted">
         <h2 className="text-base font-bold text-text-primary">{t('history.title')}</h2>
         <button onClick={onClose} className="text-text-secondary hover:text-primary w-6 h-6 flex items-center justify-center rounded hover:bg-border">
           <X size={18} />
@@ -100,6 +102,7 @@ export function HistoryPanel({ isOpen, onClose, onRestore }: HistoryPanelProps) 
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 }
