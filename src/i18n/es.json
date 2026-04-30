@@ -78,7 +78,11 @@
   "stepPanel": {
     "title": "Pasos de la Solución",
     "placeholder": "Ingresa el sistema y presiona Ejecutar para ver los pasos de la solución.",
-    "solution": "Solución"
+    "solution": "Solución",
+    "initialMatrix": "Matriz Inicial",
+    "initialMatrixDesc": "Sistema de ecuaciones ingresado",
+    "metadata": "Metadatos",
+    "methodUsed": "Método utilizado"
   },
   "solverPanel": {
     "parameter": "Parámetro",

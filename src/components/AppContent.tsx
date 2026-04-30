@@ -124,6 +124,8 @@ export function AppContent() {
                 solution={currentResult?.solution || null}
                 hasNoSolution={currentResult?.hasNoSolution || false}
                 hasInfiniteSolutions={currentResult?.hasInfiniteSolutions || false}
+                initialMatrix={coefficients}
+                method={method}
               />
             </div>
           </div>

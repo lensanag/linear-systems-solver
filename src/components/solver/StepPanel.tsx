@@ -10,6 +10,17 @@ interface StepPanelProps {
   hasNoSolution: boolean;
   hasInfiniteSolutions: boolean;
   headers?: string[];
+  initialMatrix?: string[][];
+  method?: string;
+}
+
+function parseCoefficient(value: string): Cell {
+  const trimmed = value.trim();
+  if (trimmed.includes('/')) {
+    const [num, den] = trimmed.split('/');
+    return { type: 'fraction', num: num.trim(), den: den.trim(), latex: '' };
+  }
+  return { type: 'value', latex: trimmed };
 }
 
 function CellRenderer({ cell }: { cell: Cell }) {
@@ -62,7 +73,9 @@ export function StepPanel({
   solution,
   hasNoSolution,
   hasInfiniteSolutions,
-  headers = []
+  headers = [],
+  initialMatrix,
+  method
 }: StepPanelProps) {
   const { t } = useTranslation();
 
@@ -84,6 +97,12 @@ export function StepPanel({
     return step.phase;
   };
 
+  const initialMatrixAsCells: Cell[][] | null = initialMatrix
+    ? initialMatrix.map(row => row.map(cell => parseCoefficient(cell)))
+    : null;
+
+  const methodName = method ? t(`methods.${method}`, { defaultValue: method }) : null;
+
   return (
     <div className="p-5">
       <h2 className="text-lg font-bold text-text-primary mb-4 border-b border-border pb-2">{t('stepPanel.title')}</h2>
@@ -101,6 +120,22 @@ export function StepPanel({
       )}
 
       <div className="space-y-4">
+        {initialMatrixAsCells && (
+          <div className="border border-border p-4 bg-muted border-l-4 border-l-primary">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                0
+              </span>
+              <h3 className="font-semibold text-sm text-text-primary">
+                {t('stepPanel.initialMatrix')}
+              </h3>
+            </div>
+            <p className="text-xs text-text-secondary mb-2 font-mono">
+              {t('stepPanel.initialMatrixDesc')}
+            </p>
+            <MatrixRenderer matrix={initialMatrixAsCells} />
+          </div>
+        )}
         {steps.map((step, index) => (
           <div key={index} className="border border-border p-4 bg-muted">
             <div className="flex items-center gap-2 mb-2">
@@ -126,6 +161,20 @@ export function StepPanel({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {methodName && (
+        <div className="mt-4 p-3 bg-muted border border-border">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full font-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </span>
+            <h3 className="font-semibold text-sm text-text-primary">{t('stepPanel.metadata')}</h3>
+          </div>
+          <p className="text-xs text-text-secondary">
+            <span className="font-medium">{t('stepPanel.methodUsed')}:</span> {methodName}
+          </p>
         </div>
       )}
     </div>
