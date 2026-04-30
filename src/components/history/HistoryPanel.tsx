@@ -2,7 +2,7 @@ import type { HistoryEntry } from '@/engines/shared/types';
 import { useStore } from '@/store/useStore';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, RotateCcw, Trash2, AlertTriangle } from 'lucide-react';
+import { X, RotateCcw, Trash2, AlertTriangle, Hash } from 'lucide-react';
 
 interface HistoryPanelProps {
   isOpen: boolean;
@@ -11,7 +11,7 @@ interface HistoryPanelProps {
 
 export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
   const { t } = useTranslation();
-  const { history, removeFromHistory, clearHistory } = useStore();
+  const { history, removeFromHistory, clearHistory, setMethod, setHeaders, setCoefficients, setResult } = useStore();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
 
@@ -21,11 +21,28 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
     return new Date(timestamp).toLocaleString();
   };
 
+  const formatPreview = (entry: HistoryEntry): string => {
+    if (!entry.coefficients.length || !entry.coefficients[0].length) return '';
+    const firstRow = entry.coefficients[0];
+    const preview = firstRow.map((val, idx) => {
+      const header = entry.headers[idx] || `x${idx + 1}`;
+      const value = val || '0';
+      return `${value}${header}`;
+    }).join(' + ');
+    const b = firstRow[firstRow.length - 1] || '';
+    return `${preview} = ${b}`;
+  };
+
   const handleRestore = (entry: HistoryEntry) => {
-    const store = useStore.getState();
-    store.setMethod(entry.method);
-    store.setHeaders(entry.headers);
-    store.setCoefficients(entry.coefficients);
+    setMethod(entry.method);
+    setHeaders(entry.headers);
+    setCoefficients(entry.coefficients);
+    setResult({
+      steps: [],
+      solution: null,
+      hasNoSolution: false,
+      hasInfiniteSolutions: false,
+    });
     onClose();
   };
 
@@ -51,9 +68,13 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
                   </span>
                   <span className="text-xs text-text-muted">{formatDate(entry.createdAt)}</span>
                 </div>
-                <p className="text-xs text-text-secondary mb-2">
-                  {entry.method || t('history.noMethod')} | {entry.rows}×{entry.cols}
+                <p className="text-xs text-text-secondary mb-1">
+                  {entry.method ? t(`methods.${entry.method}`) : t('history.noMethod')} | {entry.rows}×{entry.cols}
                 </p>
+                <div className="flex items-center gap-1 text-xs text-text-muted bg-surface px-2 py-1 border border-border font-mono truncate mb-2">
+                  <Hash size={10} />
+                  <span className="truncate">{formatPreview(entry)}</span>
+                </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleRestore(entry)}
