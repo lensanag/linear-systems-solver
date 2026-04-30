@@ -111,14 +111,13 @@ export function solveGaussian(coefficients: string[][]): SolveResult {
       const solCol = createFraction(solution[col].num, solution[col].den);
       const matCell = createFraction(augmentedMatrix[row][col].num, augmentedMatrix[row][col].den);
       const product = multiplyFractions(solCol, matCell);
-      sum = addFractions(sum, product);
+      sum = subtractFractions(sum, product);
     }
 
-    const diff = subtractFractions(sum, createFraction(augmentedMatrix[row][pivotCol].num, augmentedMatrix[row][pivotCol].den));
-    if (isZero(diff.num, diff.den)) continue;
+    if (isZero(sum.num, sum.den)) continue;
 
     const pivot = createFraction(augmentedMatrix[row][pivotCol].num, augmentedMatrix[row][pivotCol].den);
-    const result = divideFractions(diff, pivot);
+    const result = divideFractions(sum, pivot);
     if (!result) {
       return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
     }

@@ -63,6 +63,7 @@ export function solveLU(coefficients: string[][]): SolveResult {
     if (maxRow !== col) {
       [coeffMatrix[col], coeffMatrix[maxRow]] = [coeffMatrix[maxRow], coeffMatrix[col]];
       [bVector[col], bVector[maxRow]] = [bVector[maxRow], bVector[col]];
+      [U[col], U[maxRow]] = [U[maxRow], U[col]];
     }
 
     for (let row = col; row < n; row++) {

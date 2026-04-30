@@ -83,38 +83,46 @@ export function createFractionCell(num: number, den: number) {
 }
 
 export function multiplyFractions(a: ParsedFraction, b: ParsedFraction): ParsedFraction {
-  return {
+  const result = {
     num: a.num * b.num,
     den: a.den * b.den,
     value: a.value.mul(b.value),
   };
+  const normalized = normalizeFraction(result.num, result.den);
+  return { num: normalized.num, den: normalized.den, value: result.value };
 }
 
 export function addFractions(a: ParsedFraction, b: ParsedFraction): ParsedFraction {
-  return {
+  const result = {
     num: a.num * b.den + b.num * a.den,
     den: a.den * b.den,
     value: a.value.add(b.value),
   };
+  const normalized = normalizeFraction(result.num, result.den);
+  return { num: normalized.num, den: normalized.den, value: result.value };
 }
 
 export function subtractFractions(a: ParsedFraction, b: ParsedFraction): ParsedFraction {
-  return {
+  const result = {
     num: a.num * b.den - b.num * a.den,
     den: a.den * b.den,
     value: a.value.sub(b.value),
   };
+  const normalized = normalizeFraction(result.num, result.den);
+  return { num: normalized.num, den: normalized.den, value: result.value };
 }
 
 export function divideFractions(a: ParsedFraction, b: ParsedFraction): ParsedFraction | null {
   if (b.num === 0) {
     return null;
   }
-  return {
+  const result = {
     num: a.num * b.den,
     den: a.den * b.num,
     value: a.value.div(b.value),
   };
+  const normalized = normalizeFraction(result.num, result.den);
+  return { num: normalized.num, den: normalized.den, value: result.value };
 }
 
 export function normalizeFraction(num: number, den: number): { num: number; den: number } {
