@@ -15,8 +15,6 @@ interface Step {
 interface AppStore {
   mode: EngineMode;
   method: MethodId | null;
-  rows: number;
-  cols: number;
   headers: string[];
   coefficients: string[][];
   paramSymbol: string;
@@ -30,9 +28,13 @@ interface AppStore {
   history: HistoryEntryType[];
   setMode: (mode: EngineMode) => void;
   setMethod: (method: MethodId | null) => void;
-  setDimensions: (rows: number, cols: number) => void;
+  setCoefficients: (coefficients: string[][]) => void;
   setHeaders: (headers: string[]) => void;
   setCoefficient: (row: number, col: number, value: string) => void;
+  addRow: () => void;
+  addCol: () => void;
+  removeRow: (index: number) => void;
+  removeCol: (index: number) => void;
   setParamSymbol: (symbol: string) => void;
   setResult: (result: { steps: Step[]; solution: Cell[] | null; hasNoSolution: boolean; hasInfiniteSolutions: boolean }) => void;
   setLoading: (loading: boolean) => void;
@@ -48,18 +50,18 @@ const generateHeaders = (count: number): string[] => {
   return Array.from({ length: count }, (_, i) => `x${i + 1}`);
 };
 
+const DEFAULT_COEFFICIENTS = [
+  ['', '', ''],
+  ['', '', ''],
+];
+
 export const useStore = create<AppStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       mode: 'numeric',
       method: null,
-      rows: 2,
-      cols: 2,
       headers: generateHeaders(2),
-      coefficients: [
-        ['', '', ''],
-        ['', '', ''],
-      ],
+      coefficients: [...DEFAULT_COEFFICIENTS.map(row => [...row])],
       paramSymbol: '',
       steps: [],
       solution: null,
@@ -72,20 +74,19 @@ export const useStore = create<AppStore>()(
 
       setMode: (mode) => set({ mode }),
       setMethod: (method) => set({ method }),
-      setDimensions: (rows, cols) => {
-        const currentCoeffs = useStore.getState().coefficients;
-        const currentHeaders = useStore.getState().headers;
-        const newCoefficients = Array.from({ length: rows }, (_, r) =>
-          Array.from({ length: cols }, (_, c) =>
-            currentCoeffs[r]?.[c] ?? ''
-          )
-        );
-        const newHeaders = cols > currentHeaders.length
-          ? [...currentHeaders, ...generateHeaders(cols - currentHeaders.length)]
-          : currentHeaders.slice(0, cols);
-        set({ rows, cols, coefficients: newCoefficients, headers: newHeaders });
+
+      setCoefficients: (coefficients) => {
+        const numCols = coefficients[0]?.length ?? 3;
+        const numRows = coefficients.length;
+        const currentHeaders = get().headers;
+        const newHeaders = numCols - 1 > currentHeaders.length
+          ? [...currentHeaders, ...generateHeaders(numCols - 1 - currentHeaders.length)]
+          : currentHeaders.slice(0, numCols - 1);
+        set({ coefficients, headers: newHeaders });
       },
+
       setHeaders: (headers) => set({ headers }),
+
       setCoefficient: (row, col, value) =>
         set((state) => {
           const newCoeffs = state.coefficients.map((r, ri) =>
@@ -93,7 +94,46 @@ export const useStore = create<AppStore>()(
           );
           return { coefficients: newCoeffs };
         }),
+
+      addRow: () => {
+        const { coefficients } = get();
+        const numCols = coefficients[0]?.length ?? 3;
+        const newRow = Array(numCols).fill('');
+        set({ coefficients: [...coefficients, newRow] });
+      },
+
+      addCol: () => {
+        const { coefficients, headers } = get();
+        const numCols = coefficients[0]?.length ?? 3;
+        const newHeaders = [...headers, `x${headers.length + 1}`];
+        const newCoefficients = coefficients.map(row => [...row, '']);
+        set({ coefficients: newCoefficients, headers: newHeaders });
+      },
+
+      removeRow: (index: number) => {
+        const { coefficients } = get();
+        if (coefficients.length <= 1) return;
+        const newCoefficients = coefficients.filter((_, i) => i !== index);
+        set({ coefficients: newCoefficients });
+      },
+
+      removeCol: (index: number) => {
+        const { coefficients, headers } = get();
+        const numCols = coefficients[0]?.length ?? 3;
+        if (numCols <= 2) return;
+        if (index !== numCols - 1) {
+          const newCoefficients = coefficients.map(row => row.filter((_, i) => i !== index));
+          const newHeaders = headers.filter((_, i) => i !== index);
+          set({ coefficients: newCoefficients, headers: newHeaders });
+        } else {
+          const newCoefficients = coefficients.map(row => row.slice(0, -1));
+          const newHeaders = headers.slice(0, -1);
+          set({ coefficients: newCoefficients, headers: newHeaders });
+        }
+      },
+
       setParamSymbol: (paramSymbol) => set({ paramSymbol }),
+
       setResult: (result) =>
         set({
           steps: result.steps,
@@ -101,26 +141,28 @@ export const useStore = create<AppStore>()(
           hasNoSolution: result.hasNoSolution,
           hasInfiniteSolutions: result.hasInfiniteSolutions,
         }),
+
       setLoading: (isLoading) => set({ isLoading }),
+
       setPyodideLoaded: (pyodideLoaded) => set({ pyodideLoaded }),
+
       setLanguage: (language) => {
         i18n.changeLanguage(language);
         set({ language });
       },
+
       addToHistory: (entry) =>
         set((state) => ({ history: [entry, ...state.history] })),
+
       removeFromHistory: (id) =>
-        set((state) => ({ history: state.history.filter((e) => e.id !== id) })),
+        set((state) => ({ history: state.filter((e) => e.id !== id) })),
+
       clearHistory: () => set({ history: [] }),
+
       resetMatrix: () =>
         set({
-          rows: 2,
-          cols: 2,
           headers: generateHeaders(2),
-          coefficients: [
-            ['', '', ''],
-            ['', '', ''],
-          ],
+          coefficients: [...DEFAULT_COEFFICIENTS.map(row => [...row])],
           paramSymbol: '',
           steps: [],
           solution: null,

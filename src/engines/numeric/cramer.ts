@@ -1,6 +1,5 @@
 import type { Step, SolveResult } from '@/engines/shared/types';
 import { createMatrixFromStrings, createStep, fractionToString, createEmptyResult } from './utils';
-import { createNumericCell, cloneMatrix } from './types';
 import {
   multiplyFractions,
   addFractions,
@@ -23,8 +22,7 @@ function calculateDeterminant(matrix: { num: number; den: number }[]): { num: nu
     const d = createFraction(matrix[1][1].num, matrix[1][1].den);
     const ad = multiplyFractions(a, d);
     const bc = multiplyFractions(b, c);
-    const diff = subtractFractions(ad, bc);
-    return diff;
+    return subtractFractions(ad, bc);
   }
 
   let det = createFraction(0, 1);
@@ -48,16 +46,15 @@ function calculateDeterminant(matrix: { num: number; den: number }[]): { num: nu
   return det;
 }
 
-export function solveCramer(coefficients: string[][], headers: string[]): SolveResult {
+export function solveCramer(coefficients: string[][]): SolveResult {
   const numRows = coefficients.length;
-  const numCols = headers.length;
-  const augCols = numCols + 1;
+  const numCols = coefficients[0]?.length ? coefficients[0].length - 1 : 0;
 
-  if (numRows !== numCols) {
+  if (numRows !== numCols || numCols === 0) {
     return createEmptyResult();
   }
 
-  const matrix = createMatrixFromStrings(coefficients, augCols);
+  const matrix = createMatrixFromStrings(coefficients, numCols + 1);
   if (!matrix) {
     return createEmptyResult();
   }

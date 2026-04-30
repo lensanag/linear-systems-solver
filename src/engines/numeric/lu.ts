@@ -15,16 +15,15 @@ function fractionToString(num: number, den: number): string {
   return den === 1 ? num.toString() : `${num}/${den}`;
 }
 
-export function solveLU(coefficients: string[][], headers: string[]): SolveResult {
+export function solveLU(coefficients: string[][]): SolveResult {
   const numRows = coefficients.length;
-  const numCols = headers.length;
-  const augCols = numCols + 1;
+  const numCols = coefficients[0]?.length ? coefficients[0].length - 1 : 0;
 
-  if (numRows !== numCols) {
+  if (numRows !== numCols || numCols === 0) {
     return createEmptyResult();
   }
 
-  const matrix = createMatrixFromStrings(coefficients, augCols);
+  const matrix = createMatrixFromStrings(coefficients, numCols + 1);
   if (!matrix) {
     return createEmptyResult();
   }

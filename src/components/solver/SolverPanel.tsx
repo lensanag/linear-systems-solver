@@ -16,22 +16,26 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
   const {
     mode,
     method,
-    rows,
-    cols,
     headers,
     coefficients,
     paramSymbol,
     setMode,
     setMethod,
-    setDimensions,
-    setHeaders,
+    addRow,
+    addCol,
+    removeRow,
+    removeCol,
     setCoefficient,
+    setHeaders,
     setParamSymbol,
     setResult,
     setLoading,
     isLoading,
     pyodideLoaded,
   } = useStore();
+
+  const numRows = coefficients.length;
+  const numCols = coefficients[0]?.length ?? 3;
 
   const handleExecute = async () => {
     if (!method) {
@@ -47,19 +51,19 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
       if (mode === 'numeric') {
         switch (method) {
           case 'gaussian':
-            result = solveGaussian(coefficients, headers);
+            result = solveGaussian(coefficients);
             break;
           case 'gauss-jordan':
-            result = solveGaussJordan(coefficients, headers);
+            result = solveGaussJordan(coefficients);
             break;
           case 'cramer':
-            result = solveCramer(coefficients, headers);
+            result = solveCramer(coefficients);
             break;
           case 'inverse':
-            result = solveInverse(coefficients, headers);
+            result = solveInverse(coefficients);
             break;
           case 'lu':
-            result = solveLU(coefficients, headers);
+            result = solveLU(coefficients);
             break;
           default:
             result = { steps: [], solution: null, hasNoSolution: false, hasInfiniteSolutions: false };
@@ -110,29 +114,6 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
     }
   };
 
-  const handleRemoveRow = (index: number) => {
-    const newRows = Math.max(1, rows - 1);
-    if (index !== rows - 1) {
-      const newCoefficients = coefficients.filter((_, i) => i !== index);
-      useStore.getState().setDimensions(newRows, cols);
-      useStore.setState({ coefficients: newCoefficients });
-    } else {
-      setDimensions(newRows, cols);
-    }
-  };
-
-  const handleRemoveCol = (index: number) => {
-    const newCols = Math.max(2, cols - 1);
-    if (index !== cols - 1) {
-      const newCoefficients = coefficients.map(row => row.filter((_, i) => i !== index));
-      const newHeaders = headers.filter((_, i) => i !== index);
-      useStore.getState().setDimensions(rows, newCols);
-      useStore.setState({ coefficients: newCoefficients, headers: newHeaders });
-    } else {
-      setDimensions(rows, newCols);
-    }
-  };
-
   return (
     <div className="p-4">
       <div className="flex gap-4 mb-4" id="mode-selector">
@@ -176,8 +157,8 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
 
       <MethodSelector
         mode={mode}
-        rows={rows}
-        cols={cols}
+        rows={numRows}
+        cols={numCols}
         selectedMethod={method}
         onSelect={setMethod}
       />
@@ -191,10 +172,10 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
           newHeaders[i] = v;
           setHeaders(newHeaders);
         }}
-        onAddRow={() => setDimensions(rows + 1, cols)}
-        onAddCol={() => setDimensions(rows, cols + 1)}
-        onRemoveRow={handleRemoveRow}
-        onRemoveCol={handleRemoveCol}
+        onAddRow={addRow}
+        onAddCol={addCol}
+        onRemoveRow={removeRow}
+        onRemoveCol={removeCol}
       />
 
       <button

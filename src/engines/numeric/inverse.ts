@@ -1,6 +1,5 @@
 import type { Step, SolveResult } from '@/engines/shared/types';
 import { createMatrixFromStrings, createStep, fractionToString, createEmptyResult } from './utils';
-import { createNumericCell, cloneMatrix } from './types';
 import {
   multiplyFractions,
   addFractions,
@@ -10,6 +9,7 @@ import {
   createFraction,
   createFractionCell,
 } from './parser';
+import { createNumericCell } from './types';
 
 function calculateDeterminant(matrix: { num: number; den: number }[]): { num: number; den: number } {
   const n = matrix.length;
@@ -97,16 +97,15 @@ function calculateInverse(matrix: { num: number; den: number }[][]): { num: numb
   return augmented.map(row => row.slice(n));
 }
 
-export function solveInverse(coefficients: string[][], headers: string[]): SolveResult {
+export function solveInverse(coefficients: string[][]): SolveResult {
   const numRows = coefficients.length;
-  const numCols = headers.length;
-  const augCols = numCols + 1;
+  const numCols = coefficients[0]?.length ? coefficients[0].length - 1 : 0;
 
-  if (numRows !== numCols) {
+  if (numRows !== numCols || numCols === 0) {
     return createEmptyResult();
   }
 
-  const matrix = createMatrixFromStrings(coefficients, augCols);
+  const matrix = createMatrixFromStrings(coefficients, numCols + 1);
   if (!matrix) {
     return createEmptyResult();
   }

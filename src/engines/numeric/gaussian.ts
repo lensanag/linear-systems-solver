@@ -1,6 +1,6 @@
 import type { SolveResult } from '@/engines/shared/types';
 import { createMatrixFromStrings, createStep, fractionToString, createEmptyResult } from './utils';
-import { createNumericCell, cloneMatrix } from './types';
+import { cloneMatrix } from './types';
 import {
   multiplyFractions,
   addFractions,
@@ -11,10 +11,14 @@ import {
   createFractionCell,
 } from './parser';
 
-export function solveGaussian(coefficients: string[][], headers: string[]): SolveResult {
+export function solveGaussian(coefficients: string[][]): SolveResult {
   const numRows = coefficients.length;
-  const numCols = headers.length;
+  const numCols = coefficients[0]?.length ? coefficients[0].length - 1 : 0;
   const augCols = numCols + 1;
+
+  if (numCols === 0) {
+    return createEmptyResult();
+  }
 
   const matrix = createMatrixFromStrings(coefficients, augCols);
   if (!matrix) {
@@ -67,8 +71,7 @@ export function solveGaussian(coefficients: string[][], headers: string[]): Solv
         const product = multiplyFractions(factorResult, pivotColCell);
         const current = createFraction(augmentedMatrix[row][c].num, augmentedMatrix[row][c].den);
         const diff = subtractFractions(current, product);
-        const normalized = diff; // Already normalized in subtractFractions
-        augmentedMatrix[row][c] = { num: normalized.num, den: normalized.den };
+        augmentedMatrix[row][c] = { num: diff.num, den: diff.den };
       }
 
       const matrixAfter = cloneMatrix(augmentedMatrix);
@@ -120,8 +123,7 @@ export function solveGaussian(coefficients: string[][], headers: string[]): Solv
       return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
     }
 
-    const normalized = result; // Already simplified
-    solution[pivotCol] = { num: normalized.num, den: normalized.den };
+    solution[pivotCol] = { num: result.num, den: result.den };
   }
 
   let hasInfiniteSolutions = false;

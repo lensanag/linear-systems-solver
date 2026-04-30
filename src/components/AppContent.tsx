@@ -16,7 +16,10 @@ export function AppContent() {
   const [showTour, setShowTour] = useState(false);
   const [currentResult, setCurrentResult] = useState<SolveResult | null>(null);
 
-  const { addToHistory, setLanguage, coefficients, rows, cols, headers, mode, method, paramSymbol } = useStore();
+  const { addToHistory, setLanguage, coefficients, headers, mode, method, paramSymbol } = useStore();
+
+  const rows = coefficients.length;
+  const cols = coefficients[0]?.length ?? 3;
 
   const currentLanguage = i18n.language === 'en' ? 'en' : 'es';
 
@@ -46,16 +49,11 @@ export function AppContent() {
     const store = useStore.getState();
     store.setMode(example.mode);
     store.setMethod(example.method);
-    store.setDimensions(example.dimensions.rows, example.dimensions.cols);
     store.setHeaders(example.headers);
+    store.setCoefficients(example.coefficients);
     if (example.paramSymbol) {
       store.setParamSymbol(example.paramSymbol);
     }
-    example.coefficients.forEach((row, ri) => {
-      row.forEach((cell, ci) => {
-        store.setCoefficient(ri, ci, cell);
-      });
-    });
     setShowExamples(false);
   };
 
