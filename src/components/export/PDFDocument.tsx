@@ -1,233 +1,248 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-import type { Step, Cell, SolveResult } from '@/engines/shared/types';
-import { renderKaTeXToDataURL } from './katex-image';
-import { fractionToLatex } from '@/engines/numeric/parser';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import type { Step, Cell } from '@/engines/shared/types';
 
-// Define PDF styles
+// ─────────────────────────────────────────────────────────────────────────────
+// Styles
+// ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
-    fontSize: 12,
+    padding: 36,
+    fontSize: 11,
     fontFamily: 'Helvetica',
+    backgroundColor: '#ffffff',
   },
+  // ── Header ──
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 4,
     textAlign: 'center',
   },
+  subtitle: {
+    fontSize: 10,
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#555555',
+  },
+  // ── Sections ──
   section: {
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 16,
+    marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
-    marginBottom: 10,
-    paddingBottom: 5,
+    marginBottom: 8,
+    paddingBottom: 3,
     borderBottomWidth: 1,
     borderBottomColor: '#cccccc',
   },
-  subsectionTitle: {
-    fontSize: 14,
+  // ── Steps ──
+  stepBlock: {
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  stepTitle: {
+    fontSize: 10,
     fontWeight: 'bold',
-    marginTop: 12,
-    marginBottom: 8,
+    marginBottom: 2,
   },
   operationLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontStyle: 'italic',
-    marginBottom: 8,
-    color: '#666666',
+    color: '#777777',
+    marginBottom: 4,
   },
-  matrixContainer: {
-    marginVertical: 10,
-    display: 'flex',
+  // ── Matrix ──
+  matrixWrap: {
     flexDirection: 'row',
     justifyContent: 'center',
+    marginVertical: 6,
+  },
+  matrixBracket: {
+    fontSize: 28,
+    color: '#333333',
+    // vertical padding so the bracket aligns with multi-row matrices
+    paddingTop: 2,
+  },
+  matrixBody: {
+    flexDirection: 'column',
+    marginHorizontal: 2,
   },
   matrixRow: {
-    display: 'flex',
     flexDirection: 'row',
-    marginVertical: 2,
+    alignItems: 'center',
   },
-  matrixCell: {
-    padding: 4,
-    minWidth: 40,
-    minHeight: 24,
-    textAlign: 'center',
-    fontSize: 10,
+  // Each cell has a fixed width so columns align perfectly
+  cell: {
+    width: 48,
+    minHeight: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+    paddingVertical: 4,
+  },
+  cellText: {
     fontFamily: 'Courier',
-    display: 'flex',
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  // ── Fraction inside a cell ──
+  fraction: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  matrixImage: {
-    maxHeight: 22,
-    maxWidth: 45,
+  fracNum: {
+    fontFamily: 'Courier',
+    fontSize: 9,
+    textAlign: 'center',
   },
-  solutionContainer: {
-    marginTop: 15,
+  fracBar: {
+    height: 0.75,
+    backgroundColor: '#000000',
+    // width is set dynamically at render time
+    marginVertical: 1.5,
+    alignSelf: 'stretch',
+  },
+  fracDen: {
+    fontFamily: 'Courier',
+    fontSize: 9,
+    textAlign: 'center',
+  },
+  // ── Solution box ──
+  solutionBox: {
+    marginTop: 10,
     padding: 10,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 4,
+    backgroundColor: '#f0f7f0',
   },
   solutionRow: {
-    display: 'flex',
     flexDirection: 'row',
-    marginVertical: 4,
     alignItems: 'center',
-    minHeight: 22,
+    marginVertical: 3,
+    minHeight: 26,
   },
   solutionLabel: {
-    fontWeight: 'bold',
-    minWidth: 60,
+    fontFamily: 'Helvetica-Bold',
     fontSize: 11,
+    minWidth: 50,
   },
   solutionValue: {
     fontFamily: 'Courier',
     fontSize: 11,
   },
-  solutionImage: {
-    maxHeight: 20,
-    maxWidth: 70,
-  },
-  metadata: {
-    marginTop: 20,
-    fontSize: 9,
-    color: '#999999',
-    borderTopWidth: 1,
-    borderTopColor: '#cccccc',
-    paddingTop: 10,
-  },
-  metadataRow: {
-    marginVertical: 2,
-  },
+  // ── Warnings ──
   warning: {
-    marginVertical: 10,
+    marginVertical: 6,
     padding: 8,
-    backgroundColor: '#fff3cd',
+    backgroundColor: '#fff8e1',
     borderLeftWidth: 3,
-    borderLeftColor: '#ffc107',
+    borderLeftColor: '#f9a825',
   },
   warningText: {
-    fontSize: 11,
-    color: '#856404',
+    fontSize: 10,
+    color: '#7b5800',
+  },
+  // ── Footer ──
+  footer: {
+    marginTop: 20,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#dddddd',
+    fontSize: 8,
+    color: '#aaaaaa',
+  },
+  footerRow: {
+    marginVertical: 1,
   },
 });
 
-/**
- * Convert a Cell to either a string or KaTeX data URL.
- * Returns an object with either 'text' or 'imageUrl' field.
- */
-function cellToDisplay(
-  cell: Cell
-): { type: 'text'; value: string } | { type: 'image'; value: string } {
-  if (cell.type === 'fraction') {
-    const num = typeof cell.num === 'string' ? cell.num : Number(cell.num);
-    const den = typeof cell.den === 'string' ? cell.den : Number(cell.den);
+// ─────────────────────────────────────────────────────────────────────────────
+// Cell rendering
+// ─────────────────────────────────────────────────────────────────────────────
 
-    // Simple fractions (denominator 1) render as text
-    if (den === 1) {
-      return { type: 'text', value: String(num) };
-    }
+type CellDisplay =
+  | { kind: 'integer'; value: string }
+  | { kind: 'fraction'; num: number; den: number };
 
-    // Render complex fractions as KaTeX images
-    try {
-      const latex = fractionToLatex(num as number, den as number);
-      const imageUrl = renderKaTeXToDataURL(latex);
-      return { type: 'image', value: imageUrl };
-    } catch (error) {
-      console.error('Failed to render fraction as image:', error);
-      // Fallback to text
-      return { type: 'text', value: `${num}/${den}` };
-    }
-  }
-
-  // Non-fraction cells render as text
-  return { type: 'text', value: cell.latex || '0' };
+function resolveCell(cell: Cell): CellDisplay {
+  // All cells are FractionCell — den === 1 means an integer
+  if (cell.den === 1) return { kind: 'integer', value: String(cell.num) };
+  return { kind: 'fraction', num: cell.num, den: cell.den };
 }
 
 /**
- * Render a single matrix cell (text or image)
+ * A native @react-pdf/renderer fraction: stacked numerator / bar / denominator.
+ * No images, no html2canvas, no font-loading races — pure PDF primitives.
  */
-function MatrixCell({ cell }: { cell: Cell }) {
-  const display = cellToDisplay(cell);
+function PDFFraction({ num, den }: { num: number; den: number }) {
+  // Estimate bar width from digit count so it covers the wider of num/den
+  const numLen = String(Math.abs(num)).length + (num < 0 ? 1 : 0);
+  const denLen = String(den).length;
+  const barWidth = Math.max(numLen, denLen) * 7 + 4;
 
-  if (display.type === 'image') {
-    // Render fraction as SVG image
-    return (
-      <View style={styles.matrixCell}>
-        <Image src={display.value} style={styles.matrixImage} />
-      </View>
-    );
-  }
-
-  // Render simple text
   return (
-    <Text style={styles.matrixCell}>{display.value}</Text>
+    <View style={styles.fraction}>
+      <Text style={styles.fracNum}>{num}</Text>
+      <View style={[styles.fracBar, { width: barWidth }]} />
+      <Text style={styles.fracDen}>{den}</Text>
+    </View>
   );
 }
 
-/**
- * Render a single matrix step
- */
-function MatrixDisplay({ matrix, headers }: { matrix: Cell[][]; headers: string[] }) {
-  if (!matrix || matrix.length === 0) {
-    return null;
-  }
+function MatrixCell({ cell }: { cell: Cell }) {
+  const d = resolveCell(cell);
+  return (
+    <View style={styles.cell}>
+      {d.kind === 'fraction' ? (
+        <PDFFraction num={d.num} den={d.den} />
+      ) : (
+        <Text style={styles.cellText}>{d.value}</Text>
+      )}
+    </View>
+  );
+}
+
+function MatrixDisplay({ matrix }: { matrix: Cell[][] }) {
+  if (!matrix || matrix.length === 0) return null;
+
+  // Approximate bracket height from number of rows
+  const bracketFontSize = Math.max(20, matrix.length * 18);
 
   return (
-    <View style={styles.matrixContainer}>
-      <View>
-        {matrix.map((row, rowIdx) => (
-          <View key={rowIdx} style={styles.matrixRow}>
-            {row.map((cell, colIdx) => (
-              <MatrixCell key={`${rowIdx}-${colIdx}`} cell={cell} />
+    <View style={styles.matrixWrap}>
+      <Text style={[styles.matrixBracket, { fontSize: bracketFontSize }]}>[</Text>
+      <View style={styles.matrixBody}>
+        {matrix.map((row, ri) => (
+          <View key={ri} style={styles.matrixRow}>
+            {row.map((cell, ci) => (
+              <MatrixCell key={`${ri}-${ci}`} cell={cell} />
             ))}
           </View>
         ))}
       </View>
+      <Text style={[styles.matrixBracket, { fontSize: bracketFontSize }]}>]</Text>
     </View>
   );
 }
 
-/**
- * Render the solution vector with KaTeX for fractions
- */
-function SolutionDisplay({
-  solution,
-  headers,
-}: {
-  solution: Cell[] | null;
-  headers: string[];
-}) {
-  if (!solution || solution.length === 0) {
-    return null;
+function SolutionValue({ cell }: { cell: Cell }) {
+  const d = resolveCell(cell);
+  if (d.kind === 'fraction') {
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <PDFFraction num={d.num} den={d.den} />
+      </View>
+    );
   }
-
-  return (
-    <View style={styles.solutionContainer}>
-      <Text style={styles.subsectionTitle}>Solution:</Text>
-      {solution.map((cell, idx) => {
-        const display = cellToDisplay(cell);
-        return (
-          <View key={idx} style={styles.solutionRow}>
-            <Text style={styles.solutionLabel}>{headers[idx]} =</Text>
-            {display.type === 'image' ? (
-              <Image src={display.value} style={styles.solutionImage} />
-            ) : (
-              <Text style={styles.solutionValue}>{display.value}</Text>
-            )}
-          </View>
-        );
-      })}
-    </View>
-  );
+  return <Text style={styles.solutionValue}>{d.value}</Text>;
 }
 
-interface PDFDocumentProps {
+// ─────────────────────────────────────────────────────────────────────────────
+// Main document
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface PDFDocumentProps {
   title: string;
   method: string;
   steps: Step[];
@@ -240,10 +255,6 @@ interface PDFDocumentProps {
   date?: string;
 }
 
-/**
- * PDF Document component using @react-pdf/renderer
- * Renders step-by-step solution matrices and final answer
- */
 export function PDFDocument({
   title,
   method,
@@ -259,81 +270,80 @@ export function PDFDocument({
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+
         {/* Header */}
         <Text style={styles.title}>{title}</Text>
-        <Text style={{ textAlign: 'center', fontSize: 11, marginBottom: 20 }}>
-          Solved with {method}
-        </Text>
+        <Text style={styles.subtitle}>Method: {method}</Text>
 
-        {/* Initial Matrix Section */}
+        {/* Initial system matrix */}
         {initialMatrix && initialMatrix.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Initial Matrix</Text>
-            <MatrixDisplay matrix={initialMatrix} headers={headers} />
+            <Text style={styles.sectionTitle}>Initial System</Text>
+            <MatrixDisplay matrix={initialMatrix} />
           </View>
         )}
 
-        {/* Steps Section */}
+        {/* Step-by-step matrices */}
         {steps.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Solution Steps</Text>
             {steps.map((step, idx) => (
-              <View key={idx}>
-                <Text style={styles.subsectionTitle}>
+              <View key={idx} style={styles.stepBlock}>
+                <Text style={styles.stepTitle}>
                   Step {idx + 1}: {step.phase}
                 </Text>
-                <Text style={styles.operationLabel}>{step.operationLabel}</Text>
-                <MatrixDisplay matrix={step.matrixAfter} headers={headers} />
+                {step.operationLabel ? (
+                  <Text style={styles.operationLabel}>{step.operationLabel}</Text>
+                ) : null}
+                <MatrixDisplay matrix={step.matrixAfter} />
               </View>
             ))}
           </View>
         )}
 
-        {/* Solution Section */}
-        {!hasNoSolution && (
+        {/* Final solution */}
+        {!hasNoSolution && solution !== null && solution.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Final Solution</Text>
+            <Text style={styles.sectionTitle}>Solution</Text>
 
             {hasInfiniteSolutions && (
               <View style={styles.warning}>
                 <Text style={styles.warningText}>
-                  ⚠ This system has infinitely many solutions
+                  This system has infinitely many solutions.
                 </Text>
               </View>
             )}
 
-            <SolutionDisplay solution={solution} headers={headers} />
-          </View>
-        )}
-
-        {/* No Solution Case */}
-        {hasNoSolution && (
-          <View style={styles.section}>
-            <View style={styles.warning}>
-              <Text style={styles.warningText}>
-                ⚠ This system has no solution (inconsistent)
-              </Text>
+            <View style={styles.solutionBox}>
+              {solution.map((cell, idx) => (
+                <View key={idx} style={styles.solutionRow}>
+                  <Text style={styles.solutionLabel}>{headers[idx]} =</Text>
+                  <SolutionValue cell={cell} />
+                </View>
+              ))}
             </View>
           </View>
         )}
 
-        {/* Metadata Footer */}
-        <View style={styles.metadata}>
-          <View style={styles.metadataRow}>
-            <Text>Method: {method}</Text>
-          </View>
-          <View style={styles.metadataRow}>
-            <Text>
-              Dimensions: {dimensions.rows}×{dimensions.cols}
+        {/* No-solution case */}
+        {hasNoSolution && (
+          <View style={[styles.section, styles.warning]}>
+            <Text style={styles.warningText}>
+              This system has no solution (inconsistent).
             </Text>
           </View>
-          <View style={styles.metadataRow}>
-            <Text>Date: {date}</Text>
+        )}
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <View style={styles.footerRow}>
+            <Text>Method: {method}  |  Dimensions: {dimensions.rows}×{dimensions.cols}  |  Date: {date}</Text>
           </View>
-          <View style={styles.metadataRow}>
+          <View style={styles.footerRow}>
             <Text>Generated by Linear Systems Solver</Text>
           </View>
         </View>
+
       </Page>
     </Document>
   );

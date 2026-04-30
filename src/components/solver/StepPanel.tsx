@@ -45,11 +45,13 @@ function CellRenderer({ cell }: { cell: Cell }) {
     }
   }, [cell]);
 
-  // Wrap in a block-level container to properly reserve vertical space for fractions
-  // This prevents KaTeX elements from overlaying adjacent content
+  // Let KaTeX determine the container height naturally.
+  // Forcing min-h + flex-center fights KaTeX's baseline positioning and
+  // causes the fraction bar to render over the numerator when the fraction
+  // is taller than the fixed height.
   return (
-    <div className="inline-block min-h-[35px] min-w-[40px] flex items-center justify-center">
-      <span ref={ref} className="font-mono text-sm text-text-primary whitespace-nowrap" />
+    <div className="inline-block min-w-[48px] text-center">
+      <span ref={ref} className="font-mono text-sm text-text-primary" />
     </div>
   );
 }
@@ -62,7 +64,7 @@ function MatrixRenderer({ matrix }: { matrix: Cell[][] }) {
           {matrix.map((row, ri) => (
             <tr key={ri}>
               {row.map((cell, ci) => (
-                <td key={ci} className="border border-border px-2 py-1 text-center text-sm min-w-[40px]">
+                <td key={ci} className="border border-border px-3 py-3 text-center text-sm min-w-[48px] align-middle">
                   <CellRenderer cell={cell} />
                 </td>
               ))}
