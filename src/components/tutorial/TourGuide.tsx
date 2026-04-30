@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 
 interface TourGuideProps {
   isActive: boolean;
@@ -247,23 +248,23 @@ export function TourGuide({ isActive, onComplete, onExit }: TourGuideProps) {
     <div className="fixed inset-0 bg-black/30 z-[60]">
       {targetRect && (
         <div
-          className="absolute border-2 border-blue-500 rounded-lg shadow-lg pointer-events-none"
+          className="absolute border-2 border-primary rounded-lg shadow-lg pointer-events-none"
           style={{
             top: highlightStyle.top,
             left: highlightStyle.left,
             width: highlightStyle.width,
             height: highlightStyle.height,
-            boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.3)',
+            boxShadow: '0 0 0 4px rgba(212, 82, 110, 0.3)',
           }}
         />
       )}
 
       <div
         ref={popoverRef}
-        className="absolute z-[70] bg-white rounded-lg shadow-xl max-w-sm p-4 border border-gray-200"
+        className="absolute z-[70] bg-surface rounded-lg shadow-xl max-w-sm p-4 border border-border"
         style={popoverStyle}
       >
-        <div className="absolute w-3 h-3 bg-white border-gray-200 rotate-45"
+        <div className="absolute w-3 h-3 bg-surface border-border rotate-45"
           style={{
             ...(currentStepData.popover.position === 'top' && { bottom: '-6px', left: '50%', marginLeft: '-6px', borderBottom: 'none', borderRight: 'none' }),
             ...(currentStepData.popover.position === 'bottom' && { top: '-6px', left: '50%', marginLeft: '-6px', borderTop: 'none', borderLeft: 'none' }),
@@ -271,33 +272,45 @@ export function TourGuide({ isActive, onComplete, onExit }: TourGuideProps) {
             ...(currentStepData.popover.position === 'right' && { left: '-6px', top: '50%', marginTop: '-6px', borderRight: 'none', borderBottom: 'none' }),
           }}
         />
-        <h3 className="text-base font-bold mb-2 text-gray-800">{currentStepData.popover.title}</h3>
-        <p className="text-sm text-gray-600 mb-4">{currentStepData.popover.description}</p>
+        <h3 className="text-base font-bold mb-2 text-text-primary">{currentStepData.popover.title}</h3>
+        <p className="text-sm text-text-secondary mb-4">{currentStepData.popover.description}</p>
         <div className="flex justify-between items-center">
           <button
             onClick={onExit}
-            className="px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100 rounded"
+            className="flex items-center gap-1 px-3 py-1.5 text-sm text-text-secondary hover:text-primary hover:bg-muted rounded"
           >
+            <X size={14} />
             {t('tourGuide.exit')}
           </button>
           <div className="flex gap-2 items-center">
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-text-muted">
               {currentStep + 1} / {steps.length}
             </span>
             <div className="flex gap-1">
               {currentStep > 0 && (
                 <button
                   onClick={handlePrev}
-                  className="px-3 py-1.5 text-sm bg-gray-200 hover:bg-gray-300 rounded"
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-muted text-text-secondary hover:bg-border rounded"
                 >
+                  <ChevronLeft size={14} />
                   {t('tourGuide.prev')}
                 </button>
               )}
               <button
                 onClick={handleNext}
-                className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-primary text-white hover:bg-primary-dark rounded"
               >
-                {currentStep < steps.length - 1 ? t('tourGuide.next') : t('tourGuide.done')}
+                {currentStep < steps.length - 1 ? (
+                  <>
+                    {t('tourGuide.next')}
+                    <ChevronRight size={14} />
+                  </>
+                ) : (
+                  <>
+                    {t('tourGuide.done')}
+                    <Check size={14} />
+                  </>
+                )}
               </button>
             </div>
           </div>

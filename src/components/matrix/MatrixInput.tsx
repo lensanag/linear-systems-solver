@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
+import { Plus, X, Trash2, Columns, Rows3 } from 'lucide-react';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -91,10 +92,10 @@ export function MatrixInput({
                   />
                   <button
                     onClick={() => onRemoveCol(i)}
-                    className="text-text-muted hover:text-red-500 text-xs w-4 h-4 flex items-center justify-center"
+                    className="text-text-muted hover:text-red-500 w-5 h-5 flex items-center justify-center rounded hover:bg-red-50"
                     title={t('matrix.removeCol')}
                   >
-                    ×
+                    <X size={12} />
                   </button>
                 </div>
               </th>
@@ -127,10 +128,10 @@ export function MatrixInput({
               <td className="p-1">
                 <button
                   onClick={() => onRemoveRow(rowIndex)}
-                  className="text-text-muted hover:text-red-500 w-4 h-4 flex items-center justify-center text-xs"
+                  className="text-text-muted hover:text-red-500 w-5 h-5 flex items-center justify-center rounded hover:bg-red-50"
                   title={t('matrix.removeRow')}
                 >
-                  ×
+                  <X size={12} />
                 </button>
               </td>
             </tr>
@@ -141,14 +142,16 @@ export function MatrixInput({
               <div className="flex gap-2">
                 <button
                   onClick={onAddRow}
-                  className="px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary"
+                  className="flex items-center gap-1 px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary rounded"
                 >
+                  <Rows3 size={12} />
                   {t('matrix.addRow')}
                 </button>
                 <button
                   onClick={onAddCol}
-                  className="px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary"
+                  className="flex items-center gap-1 px-2 py-1 text-xs text-text-secondary bg-muted border border-border hover:border-primary hover:text-primary rounded"
                 >
+                  <Columns size={12} />
                   {t('matrix.addCol')}
                 </button>
               </div>
