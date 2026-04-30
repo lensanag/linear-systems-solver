@@ -1,0 +1,55 @@
+{
+  "app": {
+    "title": "Solver de Sistemas de Ecuaciones Lineales",
+    "subtitle": "Resolución paso a paso mediante operaciones matriciales"
+  },
+  "modes": {
+    "numeric": "Numérico",
+    "symbolic": "Simbólico"
+  },
+  "methods": {
+    "gaussian": "Eliminación Gaussiana",
+    "gauss-jordan": "Gauss-Jordan (RREF)",
+    "cramer": "Regla de Cramer",
+    "inverse": "Matriz Inversa",
+    "lu": "Descomposición LU"
+  },
+  "actions": {
+    "execute": "Ejecutar",
+    "clear": "Limpiar",
+    "export": "Exportar",
+    "save": "Guardar"
+  },
+  "matrix": {
+    "addRow": "+Fila",
+    "addCol": "+Columna",
+    "removeRow": "Eliminar fila",
+    "removeCol": "Eliminar columna"
+  },
+  "validation": {
+    "emptyCell": "Celda vacía",
+    "invalidFraction": "Fracción inválida",
+    "duplicateHeader": "Encabezado duplicado",
+    "paramCollision": "El símbolo coincide con un encabezado"
+  },
+  "results": {
+    "noSolution": "Sistema sin solución (inconsistente)",
+    "infiniteSolutions": "Sistema con infinitas soluciones",
+    "uniqueSolution": "Solución única"
+  },
+  "history": {
+    "title": "Historial",
+    "empty": "No hay entradas en el historial",
+    "restore": "Restaurar",
+    "delete": "Eliminar",
+    "clearAll": "Limpiar historial"
+  },
+  "steps": {
+    "pivoting": {
+      "swap": "Intercambio de filas"
+    },
+    "forward_elimination": "Eliminación hacia adelante",
+    "backward_elimination": "Eliminación hacia atrás",
+    "normalize_pivot": "Normalización del pivote"
+  }
+}

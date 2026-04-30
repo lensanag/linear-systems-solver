@@ -1,0 +1,55 @@
+{
+  "app": {
+    "title": "Linear Systems Solver",
+    "subtitle": "Step-by-step solving using matrix operations"
+  },
+  "modes": {
+    "numeric": "Numeric",
+    "symbolic": "Symbolic"
+  },
+  "methods": {
+    "gaussian": "Gaussian Elimination",
+    "gauss-jordan": "Gauss-Jordan (RREF)",
+    "cramer": "Cramer's Rule",
+    "inverse": "Inverse Matrix",
+    "lu": "LU Decomposition"
+  },
+  "actions": {
+    "execute": "Solve",
+    "clear": "Clear",
+    "export": "Export",
+    "save": "Save"
+  },
+  "matrix": {
+    "addRow": "+Row",
+    "addCol": "+Column",
+    "removeRow": "Remove row",
+    "removeCol": "Remove column"
+  },
+  "validation": {
+    "emptyCell": "Empty cell",
+    "invalidFraction": "Invalid fraction",
+    "duplicateHeader": "Duplicate header",
+    "paramCollision": "Symbol matches a header"
+  },
+  "results": {
+    "noSolution": "System has no solution (inconsistent)",
+    "infiniteSolutions": "System has infinitely many solutions",
+    "uniqueSolution": "Unique solution"
+  },
+  "history": {
+    "title": "History",
+    "empty": "No entries in history",
+    "restore": "Restore",
+    "delete": "Delete",
+    "clearAll": "Clear history"
+  },
+  "steps": {
+    "pivoting": {
+      "swap": "Row swap"
+    },
+    "forward_elimination": "Forward elimination",
+    "backward_elimination": "Backward elimination",
+    "normalize_pivot": "Pivot normalization"
+  }
+}

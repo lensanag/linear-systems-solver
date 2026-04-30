@@ -1,0 +1,175 @@
+{
+  "examples": [
+    {
+      "id": "EJ-01",
+      "mode": "numeric",
+      "dimensions": { "rows": 3, "cols": 4 },
+      "headers": ["x₁", "x₂", "x₃"],
+      "coefficients": [
+        ["2", "1", "-1", "8"],
+        ["-3", "-1", "2", "-11"],
+        ["-2", "1", "2", "-3"]
+      ],
+      "method": "gaussian",
+      "description": {
+        "es": "Sistema 3×3 con solución única — Eliminación Gaussiana",
+        "en": "3×3 system with unique solution — Gaussian Elimination"
+      },
+      "descriptionKey": "examples.EJ-01.description"
+    },
+    {
+      "id": "EJ-02",
+      "mode": "numeric",
+      "dimensions": { "rows": 3, "cols": 4 },
+      "headers": ["x₁", "x₂", "x₃"],
+      "coefficients": [
+        ["2", "1", "-1", "8"],
+        ["-3", "-1", "2", "-11"],
+        ["-2", "1", "2", "-3"]
+      ],
+      "method": "gauss-jordan",
+      "description": {
+        "es": "Sistema 3×3 con solución única — Gauss-Jordan",
+        "en": "3×3 system with unique solution — Gauss-Jordan"
+      },
+      "descriptionKey": "examples.EJ-02.description"
+    },
+    {
+      "id": "EJ-03",
+      "mode": "numeric",
+      "dimensions": { "rows": 3, "cols": 4 },
+      "headers": ["x₁", "x₂", "x₃"],
+      "coefficients": [
+        ["2", "1", "-1", "8"],
+        ["-3", "-1", "2", "-11"],
+        ["-2", "1", "2", "-3"]
+      ],
+      "method": "cramer",
+      "description": {
+        "es": "Sistema 3×3 — Regla de Cramer",
+        "en": "3×3 system — Cramer's Rule"
+      },
+      "descriptionKey": "examples.EJ-03.description"
+    },
+    {
+      "id": "EJ-04",
+      "mode": "numeric",
+      "dimensions": { "rows": 3, "cols": 4 },
+      "headers": ["x₁", "x₂", "x₃"],
+      "coefficients": [
+        ["2", "1", "-1", "8"],
+        ["-3", "-1", "2", "-11"],
+        ["-2", "1", "2", "-3"]
+      ],
+      "method": "inverse",
+      "description": {
+        "es": "Sistema 3×3 — Matriz Inversa",
+        "en": "3×3 system — Inverse Matrix"
+      },
+      "descriptionKey": "examples.EJ-04.description"
+    },
+    {
+      "id": "EJ-05",
+      "mode": "numeric",
+      "dimensions": { "rows": 3, "cols": 4 },
+      "headers": ["x₁", "x₂", "x₃"],
+      "coefficients": [
+        ["2", "1", "-1", "8"],
+        ["-3", "-1", "2", "-11"],
+        ["-2", "1", "2", "-3"]
+      ],
+      "method": "lu",
+      "description": {
+        "es": "Sistema 3×3 — Descomposición LU",
+        "en": "3×3 system — LU Decomposition"
+      },
+      "descriptionKey": "examples.EJ-05.description"
+    },
+    {
+      "id": "EJ-06",
+      "mode": "numeric",
+      "dimensions": { "rows": 2, "cols": 4 },
+      "headers": ["x₁", "x₂"],
+      "coefficients": [
+        ["1", "2", "3"],
+        ["2", "4", "9"]
+      ],
+      "method": "gauss-jordan",
+      "description": {
+        "es": "Sistema inconsistente (sin solución)",
+        "en": "Inconsistent system (no solution)"
+      },
+      "hasNoSolution": true,
+      "descriptionKey": "examples.EJ-06.description"
+    },
+    {
+      "id": "EJ-07",
+      "mode": "numeric",
+      "dimensions": { "rows": 2, "cols": 4 },
+      "headers": ["x₁", "x₂"],
+      "coefficients": [
+        ["1", "2", "4"],
+        ["2", "4", "8"]
+      ],
+      "method": "gauss-jordan",
+      "description": {
+        "es": "Sistema con infinitas soluciones",
+        "en": "System with infinitely many solutions"
+      },
+      "hasInfiniteSolutions": true,
+      "freeVariables": ["x₂"],
+      "descriptionKey": "examples.EJ-07.description"
+    },
+    {
+      "id": "EJ-08",
+      "mode": "symbolic",
+      "dimensions": { "rows": 2, "cols": 3 },
+      "headers": ["x", "y"],
+      "paramSymbol": "a",
+      "coefficients": [
+        ["2a", "3", "14"],
+        ["4", "5a", "a+7"]
+      ],
+      "method": "gaussian",
+      "description": {
+        "es": "Sistema simbólico 2×2 con parámetro 'a'",
+        "en": "Symbolic 2×2 system with parameter 'a'"
+      },
+      "descriptionKey": "examples.EJ-08.description"
+    },
+    {
+      "id": "EJ-09",
+      "mode": "symbolic",
+      "dimensions": { "rows": 2, "cols": 3 },
+      "headers": ["x", "y"],
+      "paramSymbol": "a",
+      "coefficients": [
+        ["a", "1", "1"],
+        ["1", "a", "1"]
+      ],
+      "method": "gauss-jordan",
+      "description": {
+        "es": "Sistema simbólico — análisis de casos (det = a²-4)",
+        "en": "Symbolic system — case analysis (det = a²-4)"
+      },
+      "caseAnalysis": {
+        "det": "a^2 - 4",
+        "cases": [
+          {
+            "condition": "a ≠ 2, a ≠ -2",
+            "description": { "es": "solución única", "en": "unique solution" }
+          },
+          {
+            "condition": "a = 2",
+            "description": { "es": "infinitas soluciones", "en": "infinitely many solutions" }
+          },
+          {
+            "condition": "a = -2",
+            "description": { "es": "sin solución", "en": "no solution" }
+          }
+        ]
+      },
+      "descriptionKey": "examples.EJ-09.description"
+    }
+  ]
+}
