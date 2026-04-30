@@ -53,7 +53,7 @@ export const useStore = create<AppStore>()(
       mode: 'numeric',
       method: null,
       rows: 2,
-      cols: 3,
+      cols: 2,
       headers: generateHeaders(2),
       coefficients: [
         ['', '', ''],
@@ -111,7 +111,7 @@ export const useStore = create<AppStore>()(
       resetMatrix: () =>
         set({
           rows: 2,
-          cols: 3,
+          cols: 2,
           headers: generateHeaders(2),
           coefficients: [
             ['', '', ''],
