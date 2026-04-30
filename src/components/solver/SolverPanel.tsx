@@ -8,6 +8,7 @@ import { MatrixInput } from '@/components/matrix/MatrixInput';
 
 interface SolverPanelProps {
   onSolve: (result: SolveResult) => void;
+  onClean?: () => void;
 }
 
 const METHODS: { id: MethodId; labelKey: string; icon: string; modes: EngineMode[] }[] = [
@@ -18,7 +19,7 @@ const METHODS: { id: MethodId; labelKey: string; icon: string; modes: EngineMode
   { id: 'lu', labelKey: 'methods.lu', icon: 'LU', modes: ['numeric'] },
 ];
 
-export function SolverPanel({ onSolve }: SolverPanelProps) {
+export function SolverPanel({ onSolve, onClean }: SolverPanelProps) {
   const { t } = useTranslation();
   const {
     mode,
@@ -39,6 +40,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
     setLoading,
     isLoading,
     pyodideLoaded,
+    resetMatrix,
   } = useStore();
 
   const numRows = coefficients.length;
@@ -120,6 +122,11 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClean = () => {
+    resetMatrix();
+    onClean?.();
   };
 
   const isMethodDisabled = (methodId: MethodId): boolean => {
@@ -228,14 +235,23 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
         />
       </div>
 
-      <button
-        id="solve-button"
-        onClick={handleExecute}
-        disabled={isLoading || !method}
-        className="mt-5 px-6 py-2.5 bg-primary text-white text-sm font-medium border border-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isLoading ? t('solverPanel.calculating') : t('actions.execute')}
-      </button>
+      <div className="mt-5 flex gap-3">
+        <button
+          id="solve-button"
+          onClick={handleExecute}
+          disabled={isLoading || !method}
+          className="px-6 py-2.5 bg-primary text-white text-sm font-medium border border-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? t('solverPanel.calculating') : t('actions.execute')}
+        </button>
+        <button
+          id="clean-button"
+          onClick={handleClean}
+          className="px-6 py-2.5 bg-orange-500 text-white text-sm font-medium border border-orange-600 hover:bg-orange-600"
+        >
+          {t('actions.clear')}
+        </button>
+      </div>
     </div>
   );
 }

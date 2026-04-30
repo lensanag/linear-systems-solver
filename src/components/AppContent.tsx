@@ -8,6 +8,7 @@ import { HistoryPanel } from '@/components/history/HistoryPanel';
 import { ExampleSelector } from '@/components/tutorial/ExampleSelector';
 import { ExportMenu } from '@/components/export/ExportMenu';
 import { TourGuide } from '@/components/tutorial/TourGuide';
+import { AboutModal } from '@/components/AboutModal';
 import { usePyodide } from '@/hooks/usePyodide';
 
 export function AppContent() {
@@ -16,6 +17,7 @@ export function AppContent() {
   const [showHistory, setShowHistory] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [currentResult, setCurrentResult] = useState<SolveResult | null>(null);
 
   const { addToHistory, setLanguage, coefficients, headers, mode, method, paramSymbol } = useStore();
@@ -103,13 +105,19 @@ export function AppContent() {
           >
             {currentLanguage === 'es' ? 'Ejemplos' : 'Examples'}
           </button>
+          <button
+            onClick={() => setShowAbout(true)}
+            className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-primary hover:bg-muted rounded"
+          >
+            {currentLanguage === 'es' ? 'Acerca de' : 'About'}
+          </button>
         </div>
       </nav>
 
       <main className="container mx-auto px-4 py-6">
         <div className="grid lg:grid-cols-2 gap-6 items-start">
           <div className="bg-surface border border-border" id="matrix-editor">
-            <SolverPanel onSolve={handleSolve} />
+            <SolverPanel onSolve={handleSolve} onClean={() => setCurrentResult(null)} />
           </div>
           <div className="bg-surface border border-border relative" id="step-panel">
             <div id="solution-preview">
@@ -143,6 +151,7 @@ export function AppContent() {
         onComplete={() => setShowTour(false)}
         onExit={() => setShowTour(false)}
       />
+      <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
     </div>
   );
 }
