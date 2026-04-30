@@ -67,6 +67,12 @@
       "forward": "Eliminación hacia adelante",
       "backward": "Eliminación hacia atrás",
       "identity": "Matriz identidad alcanzada"
+    },
+    "lu": {
+      "decompose": "Descomposición LU con pivoteo parcial",
+      "matrices": "Matrices L y U calculadas",
+      "forward": "Sustitución hacia adelante (L*y = b)",
+      "backward": "Sustitución hacia atrás (U*x = y)"
     }
   },
   "stepPanel": {

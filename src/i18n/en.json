@@ -67,6 +67,12 @@
       "forward": "Forward elimination",
       "backward": "Backward elimination",
       "identity": "Identity matrix reached"
+    },
+    "lu": {
+      "decompose": "LU decomposition with partial pivoting",
+      "matrices": "L and U matrices calculated",
+      "forward": "Forward substitution (L*y = b)",
+      "backward": "Backward substitution (U*x = y)"
     }
   },
   "stepPanel": {
