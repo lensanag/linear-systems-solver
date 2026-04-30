@@ -33,7 +33,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
 
   const handleExecute = async () => {
     if (!method) {
-      alert('Selecciona un método');
+      alert(t('validation.selectMethod'));
       return;
     }
 
@@ -64,7 +64,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
         }
       } else {
         if (!paramSymbol) {
-          alert('Ingresa un símbolo para el parámetro');
+          alert(t('validation.enterParamSymbol'));
           setLoading(false);
           return;
         }
@@ -121,7 +121,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
 
         {mode === 'symbolic' && (
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Parámetro:</label>
+            <label className="text-sm font-medium">{t('solverPanel.parameter')}:</label>
             <input
               type="text"
               value={paramSymbol}
@@ -163,7 +163,7 @@ export function SolverPanel({ onSolve }: SolverPanelProps) {
         disabled={isLoading || !method}
         className="px-6 py-3 bg-green-600 text-white font-bold rounded hover:bg-green-700 disabled:opacity-50"
       >
-        {isLoading ? 'Calculando...' : t('actions.execute')}
+        {isLoading ? t('solverPanel.calculating') : t('actions.execute')}
       </button>
     </div>
   );

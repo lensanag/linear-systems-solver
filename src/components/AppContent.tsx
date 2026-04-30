@@ -10,13 +10,19 @@ import { ExportMenu } from '@/components/export/ExportMenu';
 import { TourGuide } from '@/components/tutorial/TourGuide';
 
 export function AppContent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showHistory, setShowHistory] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [currentResult, setCurrentResult] = useState<SolveResult | null>(null);
 
-  const { addToHistory, language, setLanguage, coefficients, rows, cols, headers, mode, method, paramSymbol } = useStore();
+  const { addToHistory, setLanguage, coefficients, rows, cols, headers, mode, method, paramSymbol } = useStore();
+
+  const currentLanguage = i18n.language === 'en' ? 'en' : 'es';
+
+  const handleLanguageChange = (lang: 'es' | 'en') => {
+    setLanguage(lang);
+  };
 
   const handleSolve = useCallback((result: SolveResult) => {
     setCurrentResult(result);
@@ -60,8 +66,8 @@ export function AppContent() {
           <h1 className="text-2xl font-bold text-blue-600">{t('app.title')}</h1>
           <div className="flex items-center gap-4">
             <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as 'es' | 'en')}
+              value={currentLanguage}
+              onChange={(e) => handleLanguageChange(e.target.value as 'es' | 'en')}
               className="px-2 py-1 border rounded"
             >
               <option value="es">ES</option>
@@ -77,7 +83,7 @@ export function AppContent() {
             onClick={() => setShowTour(true)}
             className="px-4 py-2 rounded font-medium bg-purple-100 text-purple-700 hover:bg-purple-200"
           >
-            {language === 'es' ? 'Tutorial' : 'Tutorial'}
+            {currentLanguage === 'es' ? 'Tutorial' : 'Tutorial'}
           </button>
           <button
             onClick={() => setShowHistory(true)}
@@ -90,7 +96,7 @@ export function AppContent() {
             onClick={() => setShowExamples(true)}
             className="px-4 py-2 rounded font-medium bg-green-100 text-green-700 hover:bg-green-200"
           >
-            {language === 'es' ? 'Ejemplos' : 'Examples'}
+            {currentLanguage === 'es' ? 'Ejemplos' : 'Examples'}
           </button>
         </div>
       </nav>

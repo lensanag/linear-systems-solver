@@ -1,5 +1,8 @@
+import { useEffect, useRef } from 'react';
 import type { Step, Cell } from '@/engines/shared/types';
 import { fractionToLatex } from '@/engines/numeric/parser';
+import katex from 'katex';
+import { useTranslation } from 'react-i18next';
 
 interface StepPanelProps {
   steps: Step[];
@@ -10,11 +13,28 @@ interface StepPanelProps {
 }
 
 function CellRenderer({ cell }: { cell: Cell }) {
-  if (cell.type === 'fraction') {
-    const latex = fractionToLatex(cell.num, cell.den);
-    return <span className="font-mono">{latex}</span>;
-  }
-  return <span className="font-mono">{cell.latex}</span>;
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      let latex: string;
+      if (cell.type === 'fraction') {
+        latex = fractionToLatex(cell.num, cell.den);
+      } else {
+        latex = cell.latex;
+      }
+      try {
+        katex.render(latex, ref.current, {
+          displayMode: false,
+          throwOnError: false,
+        });
+      } catch {
+        ref.current.textContent = latex;
+      }
+    }
+  }, [cell]);
+
+  return <span ref={ref} className="font-mono" />;
 }
 
 function MatrixRenderer({ matrix }: { matrix: Cell[][] }) {
@@ -44,27 +64,29 @@ export function StepPanel({
   hasInfiniteSolutions,
   headers = []
 }: StepPanelProps) {
+  const { t } = useTranslation();
+
   if (steps.length === 0) {
     return (
       <div className="p-8 text-center text-gray-500">
-        Ingresa el sistema y presiona Ejecutar para ver los pasos de la solución.
+        {t('stepPanel.placeholder')}
       </div>
     );
   }
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Pasos de la Solución</h2>
+      <h2 className="text-xl font-bold mb-4">{t('stepPanel.title')}</h2>
 
       {hasNoSolution && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 rounded text-red-700">
-          Sistema sin solución (inconsistente)
+          {t('results.noSolution')}
         </div>
       )}
 
       {hasInfiniteSolutions && (
         <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded text-yellow-700">
-          Sistema con infinitas soluciones
+          {t('results.infiniteSolutions')}
         </div>
       )}
 
@@ -85,7 +107,7 @@ export function StepPanel({
 
       {solution && !hasNoSolution && (
         <div className="mt-6 p-4 bg-green-100 border border-green-400 rounded">
-          <h3 className="font-bold text-green-800 mb-2">Solución</h3>
+          <h3 className="font-bold text-green-800 mb-2">{t('stepPanel.solution')}</h3>
           <div className="flex flex-wrap gap-4">
             {solution.map((cell, i) => (
               <div key={i} className="text-lg">

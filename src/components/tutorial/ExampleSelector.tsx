@@ -10,7 +10,7 @@ interface ExampleSelectorProps {
 }
 
 export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [examples, setExamples] = useState<Example[]>([]);
   const [loading, setLoading] = useState(true);
   const { pyodideLoaded } = useStore();
@@ -34,7 +34,7 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
         <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-lg font-bold">Ejemplos</h2>
+          <h2 className="text-lg font-bold">{t('exampleSelector.title')}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">
             ×
           </button>
@@ -42,7 +42,7 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
 
         <div className="p-4 overflow-y-auto max-h-[60vh]">
           {loading ? (
-            <p className="text-center text-gray-500">Cargando ejemplos...</p>
+            <p className="text-center text-gray-500">{t('exampleSelector.loading')}</p>
           ) : (
             <div className="grid gap-3">
               {examples.map((example) => {
@@ -70,7 +70,7 @@ export function ExampleSelector({ isOpen, onClose, onSelect }: ExampleSelectorPr
                     <p className="text-sm">{desc}</p>
                     {disabled && (
                       <p className="text-xs text-orange-600 mt-1">
-                        Pyodide no está cargado — ejemplo simbólico deshabilitado
+                        {t('exampleSelector.pyodideNotLoaded')}
                       </p>
                     )}
                   </button>

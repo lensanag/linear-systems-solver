@@ -30,7 +30,9 @@
     "emptyCell": "Celda vacía",
     "invalidFraction": "Fracción inválida",
     "duplicateHeader": "Encabezado duplicado",
-    "paramCollision": "El símbolo coincide con un encabezado"
+    "paramCollision": "El símbolo coincide con un encabezado",
+    "selectMethod": "Selecciona un método",
+    "enterParamSymbol": "Ingresa un símbolo para el parámetro"
   },
   "results": {
     "noSolution": "Sistema sin solución (inconsistente)",
@@ -40,9 +42,13 @@
   "history": {
     "title": "Historial",
     "empty": "No hay entradas en el historial",
+    "noMethod": "sin método",
     "restore": "Restaurar",
     "delete": "Eliminar",
-    "clearAll": "Limpiar historial"
+    "clearAll": "Limpiar historial",
+    "confirmDelete": "¿Eliminar esta entrada?",
+    "confirmClearAll": "¿Limpiar todo el historial?",
+    "cancel": "Cancelar"
   },
   "steps": {
     "pivoting": {
@@ -51,5 +57,31 @@
     "forward_elimination": "Eliminación hacia adelante",
     "backward_elimination": "Eliminación hacia atrás",
     "normalize_pivot": "Normalización del pivote"
+  },
+  "stepPanel": {
+    "title": "Pasos de la Solución",
+    "placeholder": "Ingresa el sistema y presiona Ejecutar para ver los pasos de la solución.",
+    "solution": "Solución"
+  },
+  "solverPanel": {
+    "parameter": "Parámetro",
+    "calculating": "Calculando..."
+  },
+  "tourGuide": {
+    "exit": "Salir",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "done": "Finalizar"
+  },
+  "exampleSelector": {
+    "title": "Ejemplos",
+    "loading": "Cargando ejemplos...",
+    "pyodideNotLoaded": "Pyodide no está cargado — ejemplo simbólico deshabilitado"
+  },
+  "exportMenu": {
+    "export": "Exportar",
+    "pdf": "PDF",
+    "png": "PNG",
+    "latex": "LaTeX"
   }
 }

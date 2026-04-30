@@ -1,6 +1,7 @@
 import type { HistoryEntry } from '@/engines/shared/types';
 import { useStore } from '@/store/useStore';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface HistoryPanelProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface HistoryPanelProps {
 }
 
 export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
+  const { t } = useTranslation();
   const { history, removeFromHistory, clearHistory } = useStore();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
@@ -36,7 +38,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
   return (
     <div className="fixed inset-y-0 right-0 w-80 bg-white shadow-xl z-50 flex flex-col">
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="text-lg font-bold">Historial</h2>
+        <h2 className="text-lg font-bold">{t('history.title')}</h2>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
           ×
         </button>
@@ -44,7 +46,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
 
       <div className="flex-1 overflow-y-auto p-4">
         {history.length === 0 ? (
-          <p className="text-gray-500 text-center">No hay entradas en el historial</p>
+          <p className="text-gray-500 text-center">{t('history.empty')}</p>
         ) : (
           <div className="space-y-3">
             {history.map((entry) => (
@@ -56,20 +58,20 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
                   <span className="text-xs text-gray-500">{formatDate(entry.createdAt)}</span>
                 </div>
                 <p className="text-xs text-gray-600 mb-2">
-                  {entry.mode} | {entry.method || 'sin método'} | {entry.rows}×{entry.cols}
+                  {entry.mode} | {entry.method || t('history.noMethod')} | {entry.rows}×{entry.cols}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleRestore(entry)}
                     className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
                   >
-                    Restaurar
+                    {t('history.restore')}
                   </button>
                   <button
                     onClick={() => setConfirmDelete(entry.id)}
                     className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
                   >
-                    Eliminar
+                    {t('history.delete')}
                   </button>
                 </div>
               </div>
@@ -84,7 +86,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
             onClick={() => setConfirmClearAll(true)}
             className="w-full px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
           >
-            Limpiar historial
+            {t('history.clearAll')}
           </button>
         </div>
       )}
@@ -92,13 +94,13 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-60">
           <div className="bg-white p-4 rounded shadow-xl max-w-sm">
-            <p className="mb-4">¿Eliminar esta entrada?</p>
+            <p className="mb-4">{t('history.confirmDelete')}</p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setConfirmDelete(null)}
                 className="px-4 py-2 bg-gray-200 rounded"
               >
-                Cancelar
+                {t('history.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -107,7 +109,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
                 }}
                 className="px-4 py-2 bg-red-600 text-white rounded"
               >
-                Eliminar
+                {t('history.delete')}
               </button>
             </div>
           </div>
@@ -117,13 +119,13 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
       {confirmClearAll && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-60">
           <div className="bg-white p-4 rounded shadow-xl max-w-sm">
-            <p className="mb-4">¿Limpiar todo el historial?</p>
+            <p className="mb-4">{t('history.confirmClearAll')}</p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setConfirmClearAll(false)}
                 className="px-4 py-2 bg-gray-200 rounded"
               >
-                Cancelar
+                {t('history.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -132,7 +134,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
                 }}
                 className="px-4 py-2 bg-red-600 text-white rounded"
               >
-                Limpiar todo
+                {t('history.clearAll')}
               </button>
             </div>
           </div>

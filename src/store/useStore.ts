@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import i18n from '@/i18n';
 import type { EngineMode, MethodId, Cell, HistoryEntry as HistoryEntryType } from '@/engines/shared/types';
 
 interface Step {
@@ -102,7 +103,10 @@ export const useStore = create<AppStore>()(
         }),
       setLoading: (isLoading) => set({ isLoading }),
       setPyodideLoaded: (pyodideLoaded) => set({ pyodideLoaded }),
-      setLanguage: (language) => set({ language }),
+      setLanguage: (language) => {
+        i18n.changeLanguage(language);
+        set({ language });
+      },
       addToHistory: (entry) =>
         set((state) => ({ history: [entry, ...state.history] })),
       removeFromHistory: (id) =>

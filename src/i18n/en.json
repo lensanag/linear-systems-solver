@@ -30,7 +30,9 @@
     "emptyCell": "Empty cell",
     "invalidFraction": "Invalid fraction",
     "duplicateHeader": "Duplicate header",
-    "paramCollision": "Symbol matches a header"
+    "paramCollision": "Symbol matches a header",
+    "selectMethod": "Select a method",
+    "enterParamSymbol": "Enter a symbol for the parameter"
   },
   "results": {
     "noSolution": "System has no solution (inconsistent)",
@@ -40,9 +42,13 @@
   "history": {
     "title": "History",
     "empty": "No entries in history",
+    "noMethod": "no method",
     "restore": "Restore",
     "delete": "Delete",
-    "clearAll": "Clear history"
+    "clearAll": "Clear history",
+    "confirmDelete": "Delete this entry?",
+    "confirmClearAll": "Clear all history?",
+    "cancel": "Cancel"
   },
   "steps": {
     "pivoting": {
@@ -51,5 +57,31 @@
     "forward_elimination": "Forward elimination",
     "backward_elimination": "Backward elimination",
     "normalize_pivot": "Pivot normalization"
+  },
+  "stepPanel": {
+    "title": "Solution Steps",
+    "placeholder": "Enter the system and press Solve to see the solution steps.",
+    "solution": "Solution"
+  },
+  "solverPanel": {
+    "parameter": "Parameter",
+    "calculating": "Calculating..."
+  },
+  "tourGuide": {
+    "exit": "Exit",
+    "prev": "Prev",
+    "next": "Next",
+    "done": "Done"
+  },
+  "exampleSelector": {
+    "title": "Examples",
+    "loading": "Loading examples...",
+    "pyodideNotLoaded": "Pyodide not loaded — symbolic example disabled"
+  },
+  "exportMenu": {
+    "export": "Export",
+    "pdf": "PDF",
+    "png": "PNG",
+    "latex": "LaTeX"
   }
 }

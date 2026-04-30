@@ -555,11 +555,10 @@ export function solveLU(
   const bVector: NumericCell[] = matrix.map(row => row[numCols] as NumericCell);
 
   const n = numRows;
+  const U: NumericCell[][] = Array(n).fill(null).map(() => Array(n).fill(createNumericCell(0, 1)));
   const L: NumericCell[][] = Array(n).fill(null).map((_, i) =>
     Array(n).fill(null).map((_, j) => createNumericCell(i === j ? 1 : 0, 1))
   );
-  const U: NumericCell[][] = Array(n).fill(null).map(() => Array(n).fill(createNumericCell(0, 1)));
-  const P: number[] = Array(n).fill(null).map((_, i) => i);
 
   for (let col = 0; col < n; col++) {
     let maxVal = 0;
@@ -574,12 +573,12 @@ export function solveLU(
 
     if (isZero(coeffMatrix[maxRow][col].num, coeffMatrix[maxRow][col].den)) continue;
 
-    if (maxRow !== col) {
+if (maxRow !== col) {
       [coeffMatrix[col], coeffMatrix[maxRow]] = [coeffMatrix[maxRow], coeffMatrix[col]];
-      [P[col], P[maxRow]] = [P[maxRow], P[col]];
-      [L[col], L[maxRow]] = [L[maxRow], L[col]];
+      [bVector[col], bVector[maxRow]] = [bVector[maxRow], bVector[col]];
     }
 
+    // Compute U for column col (all rows from col to n-1)
     for (let row = col; row < n; row++) {
       let sum = createFraction(0, 1);
       for (let k = 0; k < col; k++) {
@@ -592,25 +591,23 @@ export function solveLU(
       U[row][col] = { num: diff.num, den: diff.den };
     }
 
-    for (let row = col; row < n; row++) {
-      if (row === col) {
-        L[row][col] = { num: 1, den: 1 };
-      } else {
-        let sum = createFraction(0, 1);
-        for (let k = 0; k < col; k++) {
-          const lCell = createFraction(L[row][k].num, L[row][k].den);
-          const uCell = createFraction(U[k][col].num, U[k][col].den);
-          const product = multiplyFractions(lCell, uCell);
-          sum = addFractions(sum, product);
-        }
-        const diff = subtractFractions(createFraction(coeffMatrix[row][col].num, coeffMatrix[row][col].den), sum);
-        const divisor = divideFractions(diff, createFraction(U[col][col].num, U[col][col].den));
-        if (!divisor) return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
-        L[row][col] = { num: divisor.num, den: divisor.den };
+    // Compute L for column col (rows below diagonal)
+    for (let row = col + 1; row < n; row++) {
+      let sum = createFraction(0, 1);
+      for (let k = 0; k < col; k++) {
+        const lCell = createFraction(L[row][k].num, L[row][k].den);
+        const uCell = createFraction(U[k][col].num, U[k][col].den);
+        const product = multiplyFractions(lCell, uCell);
+        sum = addFractions(sum, product);
       }
+      const diff = subtractFractions(createFraction(coeffMatrix[row][col].num, coeffMatrix[row][col].den), sum);
+      const divisor = divideFractions(diff, createFraction(U[col][col].num, U[col][col].den));
+      if (!divisor) return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
+      L[row][col] = { num: divisor.num, den: divisor.den };
     }
   }
 
+  // Forward substitution: L*y = b
   const yVector: NumericCell[] = Array(n).fill(createNumericCell(0, 1));
   for (let row = 0; row < n; row++) {
     let sum = createFraction(0, 1);
@@ -624,6 +621,7 @@ export function solveLU(
     yVector[row] = { num: diff.num, den: diff.den };
   }
 
+  // Back substitution: U*x = y
   const solution: NumericCell[] = Array(n).fill(createNumericCell(0, 1));
   for (let row = n - 1; row >= 0; row--) {
     let sum = createFraction(0, 1);
@@ -636,7 +634,8 @@ export function solveLU(
     const diff = subtractFractions(createFraction(yVector[row].num, yVector[row].den), sum);
     const divisor = divideFractions(diff, createFraction(U[row][row].num, U[row][row].den));
     if (!divisor) return { steps, solution: null, hasNoSolution: true, hasInfiniteSolutions: false };
-    solution[row] = { num: divisor.num, den: divisor.den };
+    const normalized = normalizeFraction(divisor.num, divisor.den);
+    solution[row] = { num: normalized.num, den: normalized.den };
   }
 
   return {
